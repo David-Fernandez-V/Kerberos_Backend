@@ -69,7 +69,7 @@ def get_card_detail(db: Session, user: User, request: CardRequest):
     card = db.query(Card).filter(Card.user_id == user.id, Card.id == request.card_id).first()
 
     if not card:
-        raise HTTPException(status_code=404, detail="Tarjeta no encontradas")
+        raise HTTPException(status_code=404, detail="Tarjetas no encontradas")
     
     if card.ask_password:
         if not pwd_context.verify(request.master_password, user.password_hash):
