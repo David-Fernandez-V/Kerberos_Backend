@@ -1,0 +1,7 @@
+__pycache__
+*.pyc
+*.env
+.vscode/
+Notas/
+venv/
+/src/executions.py
