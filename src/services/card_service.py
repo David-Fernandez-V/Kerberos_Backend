@@ -8,7 +8,6 @@ from passlib.context import CryptContext
 from src.models.folder_model import FolderRequest
 from src.models.card_model import Card, CardCreate, CardRequest, CardDetail
 from src.models.user_model import User
-from src.pw_sistem.ANN.ann_analyzer import analyze_password
 
 load_dotenv()
 fernet = Fernet(os.getenv("ENCRYPTION_KEY").encode())
