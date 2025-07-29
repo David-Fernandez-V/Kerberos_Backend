@@ -1,4 +1,3 @@
-import json
 import pickle
 import numpy as np
 from tensorflow.keras.models import load_model
@@ -15,17 +14,7 @@ def load_trained_model():
 
     return model, scaler
 
-def is_common_password(password):
-    with open("src/pw_sistem/rockyou.txt", encoding="latin-1")as f:
-        for line in f:
-            if password == line.strip():
-                return True
-        
-        return False
-    return 0
-
 def analyze_password(password):
-    message = ""
     model, scaler = load_trained_model()
 
     features = extract_features(password)
@@ -35,8 +24,4 @@ def analyze_password(password):
     prediction = model.predict(features)
     strength_level = np.argmax(prediction)
 
-    if is_common_password(password):
-        message = "Su contraseña se encuentra en una base de datos filtrada"
-
-    #return {"message": f"Nivel de seguridad: {labels[strength_level]}. {message}"}
     return strength_level
