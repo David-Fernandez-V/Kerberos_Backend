@@ -61,8 +61,8 @@ class CardCreate(BaseModel):
     alias: str
     cardholder_name: str
     number: str
-    expiration_month: int
-    expiration_year: int
+    expiration_month: str
+    expiration_year: str
     type: Optional[str] = None
     csv: Optional[str] = None
     brand: Optional[str] = None

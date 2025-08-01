@@ -21,6 +21,9 @@ def create_card(db: Session, card_data: CardCreate, user: User):
         raise HTTPException(status_code=409, detail="Nombre no disponible")
     
     number_encrypted = fernet.encrypt(card_data.number.encode()).decode()
+    cardholder_name_encrypted = fernet.encrypt(card_data.cardholder_name.encode()).decode()
+    expiration_month_encrypted = fernet.encrypt(str(card_data.expiration_month).encode()).decode()
+    expiration_year_encrypted = fernet.encrypt(str(card_data.expiration_year).encode()).decode()
     
     if(card_data.csv):
         csv_encrypetd = fernet.encrypt(card_data.number.encode()).decode()
@@ -30,11 +33,11 @@ def create_card(db: Session, card_data: CardCreate, user: User):
     new_card = Card(
         user_id = user.id,
         alias = card_data.alias,
-        cardholder_name = card_data.cardholder_name,
+        cardholder_name = cardholder_name_encrypted,
         number_encrypted = number_encrypted,
-        last4 = card_data.number[-4],
-        expiration_month = card_data.expiration_month,
-        expiration_year = card_data.expiration_year,
+        last4 = card_data.number[-4:], #Evaluar si es necesario
+        expiration_month = expiration_month_encrypted,
+        expiration_year = expiration_year_encrypted,
         csv_encrypted = csv_encrypetd,
         brand = card_data.brand,
         type = card_data.type,
