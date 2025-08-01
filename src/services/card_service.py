@@ -26,7 +26,7 @@ def create_card(db: Session, card_data: CardCreate, user: User):
     expiration_year_encrypted = fernet.encrypt(str(card_data.expiration_year).encode()).decode()
     
     if(card_data.csv):
-        csv_encrypetd = fernet.encrypt(card_data.number.encode()).decode()
+        csv_encrypetd = fernet.encrypt(card_data.csv.encode()).decode()
     else:
         csv_encrypetd = None
 
@@ -77,11 +77,27 @@ def get_card_detail(db: Session, user: User, request: CardRequest):
         if not pwd_context.verify(request.master_password, user.password_hash):
             raise HTTPException(status_code=401, detail="Contraseña maestra incorrecta")
 
+    #Desenpritación
     try:
         decrypted_number = decrypt(card.number_encrypted)
     except InvalidToken:
-        # Contraseña vieja sin cifrar
         decrypted_number = card.number_encrypted
+
+    try:
+        decrypted_cardholder_name = decrypt(card.cardholder_name)
+    except InvalidToken:
+        decrypted_cardholder_name = card.cardholder_name
+
+    try:
+        decrypted_expiration_month = decrypt(card.expiration_month)
+    except InvalidToken:
+        decrypted_expiration_month = card.expiration_month
+
+    try:
+        decrypted_expiration_year = decrypt(card.expiration_year)
+    except InvalidToken:
+        # Contraseña vieja sin cifrar
+        decrypted_expiration_year = card.expiration_year
 
     if card.csv_encrypted:
         try:
@@ -92,10 +108,10 @@ def get_card_detail(db: Session, user: User, request: CardRequest):
         decrypted_csv = card.csv_encrypted
 
     card_detail = CardDetail(
-        cardholder_name = card.cardholder_name,
+        cardholder_name = decrypted_cardholder_name,
         number= decrypted_number,
-        expiration_month = card.expiration_month,
-        expiration_year = card.expiration_year,
+        expiration_month = decrypted_expiration_month,
+        expiration_year = decrypted_expiration_year,
         csv = decrypted_csv,
         notes = card.notes,
         created_at = card.created_at,

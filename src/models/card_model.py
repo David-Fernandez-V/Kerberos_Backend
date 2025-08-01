@@ -16,8 +16,8 @@ class Card(Base):
     cardholder_name = Column(String(255), nullable=False)
     number_encrypted = Column(Text, nullable=False)
     last4 = Column(String(4), nullable=False)
-    expiration_month = Column(SmallInteger, nullable=False)
-    expiration_year = Column(SmallInteger, nullable=False)
+    expiration_month = Column(Text, nullable=False)
+    expiration_year = Column(Text, nullable=False)
 
     #opcionales
     csv_encrypted = Column(Text, nullable=True)
@@ -49,8 +49,8 @@ class CardOut(BaseModel):
 class CardDetail(BaseModel):
     cardholder_name: str
     number: str
-    expiration_month: int
-    expiration_year: int
+    expiration_month: str
+    expiration_year: str
     csv: Optional[str] = None
     notes: Optional[str] = None
     created_at: datetime
