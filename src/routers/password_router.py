@@ -37,3 +37,11 @@ def get_password_detail(
     current_user: User = Depends(get_current_user),
 ):
     return password_service.get_password_detail(db, current_user, password_request)
+
+@password_router.delete("/delete", tags=["Passwords"])
+def delete_password(
+    password_request: PasswordRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return password_service.delete_password(db, current_user, password_request)

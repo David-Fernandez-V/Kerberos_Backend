@@ -89,5 +89,19 @@ def get_password_detail(db: Session, user: User, request: PasswordRequest):
 
     return password_detail
 
+def delete_password(db: Session, user: User, request: PasswordRequest):
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    password = db.query(Password).filter(Password.user_id == user.id, Password.id == request.password_id).first()
+    if not password:
+        raise HTTPException(status_code=404, detail="Contraseña no encontradas")
+    
+    if password.ask_password:
+        if not pwd_context.verify(request.master_password, user.password_hash):
+            raise HTTPException(status_code=401, detail="Contraseña maestra incorrecta")
+        
+    db.delete(password)
+    db.commit()
+    return {"message:": f"Sesión eliminado correctamente"}
 
 
