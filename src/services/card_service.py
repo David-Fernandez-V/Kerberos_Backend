@@ -119,3 +119,18 @@ def get_card_detail(db: Session, user: User, request: CardRequest):
     )
 
     return card_detail
+
+def delete_card(db: Session, user: User, request: CardRequest):
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    card = db.query(Card).filter(Card.user_id == user.id, Card.id == request.card_id).first()
+    if not card:
+        raise HTTPException(status_code=404, detail="Tarjeta no encontrada")
+    
+    if card.ask_password:
+        if not pwd_context.verify(request.master_password, user.password_hash):
+            raise HTTPException(status_code=401, detail="Contraseña maestra incorrecta")
+        
+    db.delete(card)
+    db.commit()
+    return {"message:": f"Tarjeta eliminada correctamente"}

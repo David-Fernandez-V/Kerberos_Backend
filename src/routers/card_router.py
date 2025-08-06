@@ -33,3 +33,11 @@ def get_card_detail(
     current_user: User = Depends(get_current_user),
 ):
     return card_service.get_card_detail(db, current_user, card_request)
+
+@card_router.delete("/delete", tags=["Cards"])
+def delete_card(
+    card_request: CardRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return card_service.delete_card(db, current_user, card_request)
