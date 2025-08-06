@@ -33,3 +33,11 @@ def get_note_detail(
     current_user: User = Depends(get_current_user),
 ):
     return note_service.get_note_detail(db, current_user, note_request)
+
+@note_router.delete("/delete", tags=["Notes"])
+def delete_note(
+    note_request: NoteRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return note_service.delete_note(db, current_user, note_request)

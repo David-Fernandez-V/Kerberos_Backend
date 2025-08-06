@@ -72,3 +72,18 @@ def get_note_detail(db: Session, user: User, request: NoteRequest):
     )
 
     return note_detail
+
+def delete_note(db: Session, user: User, request: NoteRequest):
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    note = db.query(Note).filter(Note.user_id == user.id, Note.id == request.note_id).first()
+    if not note:
+        raise HTTPException(status_code=404, detail="Nota no encontradas")
+    
+    if note.ask_password:
+        if not pwd_context.verify(request.master_password, user.password_hash):
+            raise HTTPException(status_code=401, detail="Contraseña maestra incorrecta")
+        
+    db.delete(note)
+    db.commit()
+    return {"message:": f"Nota eliminado correctamente"}
