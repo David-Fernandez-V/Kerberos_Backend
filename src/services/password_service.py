@@ -94,7 +94,7 @@ def delete_password(db: Session, user: User, request: PasswordRequest):
 
     password = db.query(Password).filter(Password.user_id == user.id, Password.id == request.password_id).first()
     if not password:
-        raise HTTPException(status_code=404, detail="Contraseña no encontradas")
+        raise HTTPException(status_code=404, detail="Contraseña no encontrada")
     
     if password.ask_password:
         if not pwd_context.verify(request.master_password, user.password_hash):

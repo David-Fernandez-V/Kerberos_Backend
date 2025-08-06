@@ -78,7 +78,7 @@ def delete_note(db: Session, user: User, request: NoteRequest):
 
     note = db.query(Note).filter(Note.user_id == user.id, Note.id == request.note_id).first()
     if not note:
-        raise HTTPException(status_code=404, detail="Nota no encontradas")
+        raise HTTPException(status_code=404, detail="Nota no encontrada")
     
     if note.ask_password:
         if not pwd_context.verify(request.master_password, user.password_hash):
