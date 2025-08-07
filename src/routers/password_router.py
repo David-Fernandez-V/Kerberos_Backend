@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Body
 from sqlalchemy.orm import Session
 from src.models.folder_model import FolderRequest
 from src.database.db import get_db
-from src.models.password_model import PasswordCreate, PasswordOut, PasswordDetail, PasswordRequest
+from src.models.password_model import PasswordCreate, PasswordOut, PasswordDetail, PasswordRequest, PasswordGenerate
 from src.models.user_model import User
 from src.services import password_service
 from src.services.auth_dependency import get_current_user
@@ -45,3 +45,10 @@ def delete_password(
     current_user: User = Depends(get_current_user),
 ):
     return password_service.delete_password(db, current_user, password_request)
+
+@password_router.post("/generate", tags=["Passwords"])
+def generate_password(
+    pwd_options: PasswordGenerate,
+    current_user: User = Depends(get_current_user),
+):
+    return password_service.generate_pwd(pwd_options)

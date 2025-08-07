@@ -6,9 +6,10 @@ from dotenv import load_dotenv
 from passlib.context import CryptContext
 
 from src.models.folder_model import FolderRequest
-from src.models.password_model import Password, PasswordCreate, PasswordRequest, PasswordDetail
+from src.models.password_model import Password, PasswordCreate, PasswordRequest, PasswordDetail, PasswordGenerate
 from src.models.user_model import User
 from src.pw_sistem.ANN.ann_analyzer import analyze_password
+from src.pw_sistem.pw_generator import generate_password
 
 load_dotenv()
 fernet = Fernet(os.getenv("ENCRYPTION_KEY").encode())
@@ -103,5 +104,8 @@ def delete_password(db: Session, user: User, request: PasswordRequest):
     db.delete(password)
     db.commit()
     return {"message:": f"Sesión eliminado correctamente"}
+
+def generate_pwd(pwd_options: PasswordGenerate):
+    return generate_password(pwd_options.length)
 
 

@@ -53,10 +53,18 @@ class PasswordCreate(BaseModel):
     notes: Optional[str] = None
     folder_id: Optional[int | None] = None
 
+class PasswordGenerate(BaseModel):
+    length: int
+    include_capital: bool
+    include_lower: bool
+    include_number: bool
+    include_symbols: bool
+    quantity_numbers: int
+    quantity_symbols: int
+
 class PasswordRequest(BaseModel):
     password_id: int
     master_password: str = ""
-
 
 class PasswordEdit(BaseModel):
     pass
