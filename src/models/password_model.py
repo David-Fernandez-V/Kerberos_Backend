@@ -62,6 +62,15 @@ class PasswordGenerate(BaseModel):
     quantity_numbers: int
     quantity_symbols: int
 
+class PassphraseGenerate(BaseModel):
+    words_number: int
+    separator: str
+    include_number: bool #revisar
+    include_symbol: bool #revisar
+    capitalize: bool
+    english: bool
+    spanish: bool
+
 class PasswordRequest(BaseModel):
     password_id: int
     master_password: str = ""

@@ -10,6 +10,7 @@ from src.models.password_model import Password, PasswordCreate, PasswordRequest,
 from src.models.user_model import User
 from src.pw_sistem.ANN.ann_analyzer import analyze_password
 from src.pw_sistem.pw_generator import generate_password
+from src.pw_sistem.passphrase_generator import generate_passphrase
 
 load_dotenv()
 fernet = Fernet(os.getenv("ENCRYPTION_KEY").encode())
@@ -104,8 +105,3 @@ def delete_password(db: Session, user: User, request: PasswordRequest):
     db.delete(password)
     db.commit()
     return {"message:": f"Sesión eliminado correctamente"}
-
-def generate_pwd(pwd_options: PasswordGenerate):
-    return generate_password(pwd_options.length)
-
-
