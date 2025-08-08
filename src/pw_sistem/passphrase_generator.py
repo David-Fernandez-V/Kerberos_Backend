@@ -16,13 +16,18 @@ def generate_passphrase(passphrase_config :PassphraseGenerate):
 
     for part in structure[:passphrase_config.words_number]:
         if part == "NOUN":
-            words.append(random.choice(NOUNS))
+            word = random.choice(NOUNS)
         elif part == "VERB":
-            words.append(random.choice(VERBS))
+            word = random.choice(VERBS)
         elif part == "ADJ":
-            words.append(random.choice(ADJECTIVES))
+            word = random.choice(ADJECTIVES)
         else:
-            words.append("???")
+            word = "???"
+        
+        if passphrase_config.capitalize:
+            word = word.capitalize()
+
+        words.append(word)
 
     passphrase = passphrase_config.separator.join(words)
 
