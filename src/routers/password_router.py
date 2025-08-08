@@ -53,11 +53,11 @@ def generate_password(
     pwd_options: PasswordGenerate,
     current_user: User = Depends(get_current_user),
 ):
-    return pw_generator.generate_password(pwd_options.length)
+    return password_service.generate_psw(pwd_options)
 
 @password_router.post("/generate_passphrase", tags=["Passwords"])
 def generate_passphrase(
     pwd_options: PassphraseGenerate,
     current_user: User = Depends(get_current_user),
 ):
-    return passphrase_generator.generate_passphrase(pwd_options)
+    return password_service.generate_psphrase(pwd_options)
