@@ -29,14 +29,21 @@ def generate_passphrase(passphrase_config :PassphraseGenerate):
 
         words.append(word)
 
-    passphrase = passphrase_config.separator.join(words)
-
+    #Elementos extra a insertar
+    extras = []
     if passphrase_config.include_number:
-        number = str(random.randint(10, 99))
-        passphrase += passphrase_config.separator + number
-
+        extras.append(str(random.randint(10, 99)))
     if passphrase_config.include_symbol:
-        symbol = random.choice(SYMBOLS)
-        passphrase += symbol
+        extras.append(random.choice(SYMBOLS))
+
+    # Insertar inicio o final
+    for extra in extras:
+        if random.choice([True, False]):
+            words.insert(0, extra)
+        else:
+            words.append(extra)
+
+    # Separador
+    passphrase = passphrase_config.separator.join(words)
 
     return passphrase
