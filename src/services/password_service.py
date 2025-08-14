@@ -110,7 +110,7 @@ def delete_password(db: Session, user: User, request: PasswordRequest):
 
 def generate_psw(pwd_options: PasswordGenerate):
     try:
-        return {"password": generate_password(pwd_options.length)}
+        return {"password": generate_password(pwd_options)}
     except Exception:
         raise HTTPException(status_code=500, detail="Error al generar contraseña")
     
