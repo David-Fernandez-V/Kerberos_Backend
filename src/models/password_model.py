@@ -59,8 +59,8 @@ class PasswordGenerate(BaseModel):
     include_lower: bool
     include_number: bool
     include_symbols: bool
-    quantity_numbers: int
-    quantity_symbols: int
+    #quantity_numbers: int
+    #quantity_symbols: int
 
 class PassphraseGenerate(BaseModel):
     words_number: int
