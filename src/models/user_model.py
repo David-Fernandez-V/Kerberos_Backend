@@ -25,3 +25,6 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+class UserRequest(BaseModel):
+    master_password: str = ""

@@ -1,10 +1,11 @@
 from sqlalchemy.orm import Session
-from src.models.user_model import User, UserCreate
+from src.models.user_model import User, UserCreate, UserRequest
 from passlib.context import CryptContext
 from fastapi import HTTPException
 
 pwd_context = CryptContext(schemes=["bcrypt"])
 
+""""""
 def get_users(db: Session):
     users = db.query(User).filter(User.deleted == False).all()
     if not users:
@@ -22,6 +23,7 @@ def get_user_by_email(db: Session, email: str):
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return user
+""""""
 
 def create_user(db: Session, user_data: UserCreate):
     existing = db.query(User).filter(User.email == user_data.email).first()
@@ -62,3 +64,9 @@ def destroy_user(db: Session, user_id: int):
     db.delete(user)
     db.commit()
     return {"message:": f"Usuario eliminado correctamente: {user.email}"}
+
+def check_master_password(user: User, request: UserRequest):
+    if pwd_context.verify(request.master_password, user.password_hash):
+        return True
+    else:
+        return False

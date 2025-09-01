@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Path, Depends
 from sqlalchemy.orm import Session
 from src.database.db import get_db
-from src.models.user_model import User, UserCreate
+from src.models.user_model import User, UserCreate, UserRequest
 from src.services import user_service
 from src.services.auth_dependency import get_current_user
 
 user_router = APIRouter()
 
+#Eliminar
 @user_router.get("", tags=["Users"])
 def get_users(
         db: Session = Depends(get_db),
@@ -14,6 +15,7 @@ def get_users(
     ):
     return user_service.get_users(db)
 
+#Eliminar
 @user_router.get("/by-email", tags=["Users"])
 def get_user_by_email(
         email: str, db: Session = Depends(get_db),
@@ -49,6 +51,15 @@ def destroy_user(
     ):
     return user_service.destroy_user(db, user_id)
 
+@user_router.post("/chek-masterpassword",tags=["Users"])
+def check_password(
+    request: UserRequest,
+    
+    current_user: User = Depends(get_current_user),
+):
+    return user_service.check_master_password(current_user, request)
+
+#Eliminar
 @user_router.get("/{user_id}", tags=["Users"])
 def get_user(
         user_id: int = Path(), db: Session = Depends(get_db),
