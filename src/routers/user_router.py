@@ -51,7 +51,7 @@ def destroy_user(
     ):
     return user_service.destroy_user(db, user_id)
 
-@user_router.post("/chek-masterpassword",tags=["Users"])
+@user_router.post("/check-masterpassword",tags=["Users"])
 def check_password(
     request: UserRequest,
     
