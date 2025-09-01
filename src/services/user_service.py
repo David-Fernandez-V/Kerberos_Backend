@@ -66,7 +66,8 @@ def destroy_user(db: Session, user_id: int):
     return {"message:": f"Usuario eliminado correctamente: {user.email}"}
 
 def check_master_password(user: User, request: UserRequest):
-    if pwd_context.verify(request.master_password, user.password_hash):
-        return True
-    else:
-        return False
+    if not pwd_context.verify(request.master_password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Contraseña maestra incorrecta")
+    
+    return {"message": f"Contraseña correcta"}
+        
