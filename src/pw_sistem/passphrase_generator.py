@@ -4,34 +4,37 @@ from pathlib import Path
 from src.models.password_model import PassphraseGenerate
 
 # Diccionario de rutas CSV
-CSV_FILES = {
-    "NOUN": "src/pw_sistem/dictionaries/nouns.csv",
-    "VERB": "src/pw_sistem/dictionaries/verbs.csv",
-    "ADJ": "src/pw_sistem/dictionaries/adjectives.csv",
-    "ADV": "src/pw_sistem/dictionaries/adverbs.csv",
+BASE_CSV_FILES = {
+    "NOUN": "nouns.csv",
+    "VERB": "verbs.csv",
+    "ADJ": "adjectives.csv",
+    "ADV": "adverbs.csv",
 }
 
 WORD_LISTS = {}
-
 SYMBOLS = "!@#$%^&*"
 
-def load_words(word_type: str):
-    """Carga palabras desde CSV si no están en caché."""
-    if word_type not in CSV_FILES:
-        raise ValueError(f"No existe un CSV definido para {word_type}")
+def load_words(word_type: str, spanish: bool = False):
+    """Carga palabras desde CSV si no están en caché, según el idioma."""
+    lang_folder = "es" if spanish else "en"
+    
+    # Construir ruta completa usando tu estructura base
+    base_path = Path(__file__).parent.parent / "pw_sistem" / "dictionaries" / lang_folder
+    path = base_path / BASE_CSV_FILES[word_type]
 
-    if word_type not in WORD_LISTS:
-        path = Path(CSV_FILES[word_type])
+    # Cache key única para idioma + tipo
+    cache_key = f"{lang_folder}/{word_type}"
+
+    if cache_key not in WORD_LISTS:
         if not path.exists():
             raise FileNotFoundError(f"Archivo {path} no encontrado")
         with open(path, encoding="utf-8") as f:
             reader = csv.reader(f)
-            WORD_LISTS[word_type] = [row[0].strip() for row in reader if row]
-    return WORD_LISTS[word_type]
+            WORD_LISTS[cache_key] = [row[0].strip() for row in reader if row]
+
+    return WORD_LISTS[cache_key]
 
 def generate_structure(n: int):
-    
-    #base_pattern = ["ADJ", "NOUN", "VERB", "NOUN"]
     base_pattern = ["ADJ", "NOUN", "VERB", "ADV", "NOUN"]
     structure = [base_pattern[i % len(base_pattern)] for i in range(n)]
     return structure
@@ -43,7 +46,7 @@ def generate_passphrase(passphrase_config: PassphraseGenerate):
     words = []
     for part in structure:
         try:
-            word_list = load_words(part)
+            word_list = load_words(part, spanish=passphrase_config.spanish)
             word = random.choice(word_list)
         except Exception:
             word = "???"
