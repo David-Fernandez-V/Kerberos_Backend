@@ -1,7 +1,10 @@
 from sqlalchemy.orm import Session
-from src.models.user_model import User, UserCreate, UserRequest
 from passlib.context import CryptContext
 from fastapi import HTTPException
+
+from src.models.user_model import User, UserCreate, UserRequest
+from src.email_sistem.verify_email import send_verification_email
+from src.services.auth_service import create_verification_token
 
 pwd_context = CryptContext(schemes=["bcrypt"])
 
@@ -26,15 +29,32 @@ def get_user_by_email(db: Session, email: str):
 """"""
 
 def create_user(db: Session, user_data: UserCreate):
+    # Verificar si ya existe
     existing = db.query(User).filter(User.email == user_data.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Correo ya registrado")
+
+    # Hashear contraseña
     hashed_password = pwd_context.hash(user_data.password)
-    new_user = User(email=user_data.email, password_hash=hashed_password)
+    new_user = User(
+        email=user_data.email,
+        password_hash=hashed_password,
+        is_verified=False
+    )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return {"message": f"Usuario registrado con exito: {new_user.email}"}
+
+    # Generar token de verificación
+    token = create_verification_token(new_user.email)
+
+    # Enviar correo de verificación
+    try:
+        send_verification_email(new_user.email, token)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error enviando correo: {str(e)}")
+
+    return {"message": f"Usuario registrado con éxito: {new_user.email}. Revisa tu correo para verificar la cuenta."}
 
 def change_password(db: Session, user_id: int, new_password: str):
     user = db.query(User).filter(User.deleted == False, User.id == user_id).first()
