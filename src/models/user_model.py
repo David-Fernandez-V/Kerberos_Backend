@@ -11,6 +11,7 @@ class User(Base):
     password_hash = Column(Text, nullable=False)
     created_at = Column(DateTime, default=func.now())
     deleted = Column(Boolean, nullable=False, default=False)
+    is_verified = Column(Boolean, nullable=False, default=False)
 
     # Relaciones
     folders = relationship("Folder", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)

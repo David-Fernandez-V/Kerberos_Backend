@@ -27,3 +27,7 @@ def get_me(current_user: User = Depends(get_current_user)):
 def refresh_token(current_user: User = Depends(get_current_user)):
     return auth_service.refresh_token(current_user)
 
+@authentication_router.get("/verify", tags=["Authentication"])
+def verify_email(token: str, db: Session = Depends(get_db)):
+    return auth_service.verify_email(db, token)
+

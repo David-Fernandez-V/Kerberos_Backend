@@ -24,7 +24,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 def authenticate_user(db: Session, email: str, password: str):
-    auth_user = db.query(User).filter(User.email == email, User.deleted == False).first()
+    auth_user = db.query(User).filter(User.email == email, User.deleted == False, User.is_verified == True).first()
     if not auth_user or not pwd_context.verify(password, auth_user.password_hash):
         raise HTTPException(status_code=401, detail="Credenciales incorrectas.")
     token = create_access_token(data={"sub": auth_user.email})
@@ -57,3 +57,36 @@ def refresh_token(current_user: User):
         path="/"
     )
     return response
+
+#Registro
+
+def create_verification_token(email: str):
+    expire = datetime.now(timezone.utc) + timedelta(hours=24)  # expira en 24h
+    payload = {"sub": email, "exp": expire, "type": "verification"}
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def decode_verification_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "verification":
+            return None
+        return payload.get("sub")  # devuelve el email
+    except Exception:
+        return None
+
+def verify_email(db: Session, token: str):
+    email = decode_verification_token(token)
+    if not email:
+        raise HTTPException(status_code=400, detail="Token inválido o expirado")
+
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    if user.is_verified:
+        return {"message": "El correo ya está verificado"}
+
+    user.is_verified = True
+    db.commit()
+
+    return {"message": "Correo verificado con éxito"}
