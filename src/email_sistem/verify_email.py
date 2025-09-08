@@ -7,7 +7,8 @@ def send_verification_email(to_email: str, token: str):
     sender = os.getenv("EMAIL_USER")
     password = os.getenv("EMAIL_PASS")  # App password de Gmail u otro proveedor
     subject = "Verifica tu cuenta"
-    verification_link = f"http://localhost:3000/verify?token={token}"  # frontend
+    base_url = os.getenv("BASE_URL")
+    verification_link = f"{base_url}/verify?token={token}"  # frontend
 
     msg = MIMEMultipart()
     msg["From"] = sender

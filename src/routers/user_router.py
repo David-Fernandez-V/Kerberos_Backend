@@ -23,10 +23,10 @@ def get_user_by_email(
     ):
     return user_service.get_user_by_email(db, email)
 
-@user_router.post("/add", tags=["Users"])
+#Registrar usuario (Libre)
+@user_router.post("/register", tags=["Users"])
 def create_user(
-        user_data: UserCreate, db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
+        user_data: UserCreate, db: Session = Depends(get_db),        
     ):
     return user_service.create_user(db, user_data)
 
