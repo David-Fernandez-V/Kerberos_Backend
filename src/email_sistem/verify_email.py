@@ -16,7 +16,7 @@ def send_verification_email(to_email: str, token: str):
     msg["Subject"] = subject
 
     body = f"""
-    <h2>Bienvenido</h2>
+    <h2>Bienvenido a Kerberos</h2>
     <p>Gracias por registrarte. Por favor haz clic en el siguiente enlace para verificar tu cuenta:</p>
     <a href="{verification_link}">Verificar cuenta</a>
     """
