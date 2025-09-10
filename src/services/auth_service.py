@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from src.models.user_model import User
 from passlib.context import CryptContext
-from jose import JWTError, jwt
+from jose import jwt
 from datetime import datetime, timedelta, timezone
 import os
 from dotenv import load_dotenv
@@ -61,7 +61,7 @@ def refresh_token(current_user: User):
 #Registro
 
 def create_verification_token(email: str):
-    expire = datetime.now(timezone.utc) + timedelta(hours=24)  # expira en 24h
+    expire = datetime.now(timezone.utc) + timedelta(hours=1)
     payload = {"sub": email, "exp": expire, "type": "verification"}
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
