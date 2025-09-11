@@ -5,6 +5,7 @@ from src.models.user_model import User
 from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta, timezone
+from jose.exceptions import ExpiredSignatureError
 import os
 from dotenv import load_dotenv
 
@@ -77,25 +78,38 @@ def decode_verification_token(token: str):
         return None
 
 def verify_email(db: Session, token: str):
-    email = decode_verification_token(token)
 
-    if not email:
-        raise HTTPException(status_code=400, detail="Token inválido o expirado")
-
-    user = db.query(User).filter(User.email == email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    
-    if user.is_verified:
-        return {"message": "El correo ya está verificado"}
-
-    user.is_verified = True
-    db.commit()
-
-    # Enviar correo de confrimación
     try:
-        send_confirmation_email(email)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error enviando correo: {str(e)}")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("sub")
 
-    return {"message": "Correo verificado con éxito"}
+        if not email:
+            raise HTTPException(status_code=400, detail="Token inválido o expirado")
+
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        
+        if user.is_verified:
+            return {"message": "El correo ya está verificado"}
+
+        user.is_verified = True
+        db.commit()
+
+        # Enviar correo de confrimación
+        try:
+            send_confirmation_email(email)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error enviando correo: {str(e)}")
+
+        return {"message": "Correo verificado con éxito"}
+    
+    except ExpiredSignatureError:
+        # token vencido
+        email = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_exp": False}).get("sub")
+        if email:
+            user = db.query(User).filter(User.email == email, User.is_verified == False).first()
+            if user:
+                db.delete(user)
+                db.commit()
+        raise HTTPException(status_code=400, detail="El token ha expirado, vuelve a registrarte")
