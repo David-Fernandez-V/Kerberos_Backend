@@ -1,3 +1,4 @@
+from email.mime.image import MIMEImage
 import os
 import smtplib
 from email.mime.text import MIMEText
@@ -10,18 +11,38 @@ def send_confirmation_email(to_email: str):
     base_url = os.getenv("BASE_URL")
     login_link = f"{base_url}/LogIn"
 
-    msg = MIMEMultipart()
+    msg = MIMEMultipart("related")
     msg["From"] = sender
     msg["To"] = to_email
     msg["Subject"] = subject
 
-    body = f"""
-    <h2>Tu cuenta ha sido verificada</h2>
-    <p>¡Bienvenido! Ahora puedes gestionar todas tus cuentas y contraseñas desde Kerberos.</p>
-    <a href="{login_link}">Iniciar sesión</a>
-    """
-    msg.attach(MIMEText(body, "html"))
+    alternative = MIMEMultipart("alternative")
+    msg.attach(alternative)
 
+    html_body = f"""
+    <html>
+      <body>
+        <img src="cid:logo" alt="Kerberos Logo" height="150"><br>
+        <h2>Tu cuenta ha sido verificada</h2>
+        <p>¡Bienvenido! Ahora puedes gestionar todas tus cuentas y contraseñas desde Kerberos.</p>
+        <a href="{login_link}">Iniciar sesión</a>
+      </body>
+    </html>
+    """
+
+    alternative.attach(MIMEText(html_body, "html"))
+
+    # Adjuntar imagen
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    print(BASE_DIR)
+    image_path = os.path.join(BASE_DIR, "kerberos_logo.png")
+    with open(image_path, "rb") as img_file:
+        img = MIMEImage(img_file.read())
+        img.add_header("Content-ID", "<logo>")
+        img.add_header("Content-Disposition", "inline", filename=os.path.basename(image_path))
+        msg.attach(img)
+
+    # Envío
     with smtplib.SMTP("smtp.gmail.com", 587) as server:
         server.starttls()
         server.login(sender, password)
