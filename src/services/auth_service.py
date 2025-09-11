@@ -8,6 +8,8 @@ from datetime import datetime, timedelta, timezone
 import os
 from dotenv import load_dotenv
 
+from src.email_sistem.confirmation_email import send_confirmation_email
+
 load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -76,17 +78,24 @@ def decode_verification_token(token: str):
 
 def verify_email(db: Session, token: str):
     email = decode_verification_token(token)
+
     if not email:
         raise HTTPException(status_code=400, detail="Token inválido o expirado")
 
     user = db.query(User).filter(User.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
+    
     if user.is_verified:
         return {"message": "El correo ya está verificado"}
 
     user.is_verified = True
     db.commit()
+
+    # Enviar correo de confrimación
+    try:
+        send_confirmation_email(email)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error enviando correo: {str(e)}")
 
     return {"message": "Correo verificado con éxito"}

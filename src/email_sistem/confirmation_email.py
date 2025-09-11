@@ -3,12 +3,12 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-def send_verification_email(to_email: str, token: str):
+def send_confirmation_email(to_email: str):
     sender = os.getenv("EMAIL_USER")
-    password = os.getenv("EMAIL_PASS") 
-    subject = "Verifica tu cuenta"
+    password = os.getenv("EMAIL_PASS")
+    subject = "Cuenta verificada"
     base_url = os.getenv("BASE_URL")
-    verification_link = f"{base_url}/verify?token={token}"
+    login_link = f"{base_url}/LogIn"
 
     msg = MIMEMultipart()
     msg["From"] = sender
@@ -16,9 +16,9 @@ def send_verification_email(to_email: str, token: str):
     msg["Subject"] = subject
 
     body = f"""
-    <h2>Bienvenido a Kerberos</h2>
-    <p>Gracias por registrarte. Por favor haz clic en el siguiente enlace para verificar tu cuenta:</p>
-    <a href="{verification_link}">Verificar cuenta</a>
+    <h2>Tu cuenta ha sido verificada</h2>
+    <p>¡Bienvenido! Ahora puedes gestionar todas tus cuentas y contraseñas desde Kerberos.</p>
+    <a href="{login_link}">Iniciar sesión</a>
     """
     msg.attach(MIMEText(body, "html"))
 
