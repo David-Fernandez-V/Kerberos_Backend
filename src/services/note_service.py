@@ -8,6 +8,7 @@ from passlib.context import CryptContext
 from src.models.folder_model import FolderRequest
 from src.models.note_model import Note, NoteDetail, NoteCreate, NoteRequest
 from src.models.user_model import User
+from src.services.ws_manager import manager
 
 load_dotenv()
 fernet = Fernet(os.getenv("ENCRYPTION_KEY").encode())
@@ -15,7 +16,7 @@ fernet = Fernet(os.getenv("ENCRYPTION_KEY").encode())
 def decrypt_content(encrypted_content: str) -> str:
     return fernet.decrypt(encrypted_content.encode()).decode()
 
-def create_note(db: Session, note_data: NoteCreate, user: User):
+async def create_note(db: Session, note_data: NoteCreate, user: User):
 
     existing = db.query(Note).filter(Note.user_id == user.id,Note.title == note_data.title).first()
     if existing:
@@ -33,6 +34,9 @@ def create_note(db: Session, note_data: NoteCreate, user: User):
     db.add(new_note)
     db.commit()
     db.refresh(new_note)
+
+    await manager.broadcast(f"Nueva nota creada: {new_note.title}")
+
     return {"message": f"Nota guardada: {new_note.title}"}
     
 def get_notes_by_user(db: Session, user: User, request: FolderRequest):
@@ -73,7 +77,7 @@ def get_note_detail(db: Session, user: User, request: NoteRequest):
 
     return note_detail
 
-def delete_note(db: Session, user: User, request: NoteRequest):
+async def delete_note(db: Session, user: User, request: NoteRequest):
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     note = db.query(Note).filter(Note.user_id == user.id, Note.id == request.note_id).first()
@@ -86,4 +90,7 @@ def delete_note(db: Session, user: User, request: NoteRequest):
         
     db.delete(note)
     db.commit()
+
+    await manager.broadcast(f"Nota eliminada: {note.title}")
+
     return {"message:": f"Nota eliminado correctamente"}

@@ -11,12 +11,12 @@ from src.services.auth_dependency import get_current_user
 note_router = APIRouter()
 
 @note_router.post("/create", tags=["Notes"])
-def create_note(
+async def create_note(
         note_data: NoteCreate ,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
     ):
-    return note_service.create_note(db, note_data, current_user)
+    return await note_service.create_note(db, note_data, current_user)
 
 @note_router.post("/by-user", response_model=List[NoteOut], tags=["Notes"])
 def get_notes(
@@ -35,9 +35,9 @@ def get_note_detail(
     return note_service.get_note_detail(db, current_user, note_request)
 
 @note_router.delete("/delete", tags=["Notes"])
-def delete_note(
+async def delete_note(
     note_request: NoteRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return note_service.delete_note(db, current_user, note_request)
+    return await note_service.delete_note(db, current_user, note_request)
