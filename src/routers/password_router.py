@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 from fastapi import APIRouter, Depends, Body
 from sqlalchemy.orm import Session
 from src.models.folder_model import FolderRequest
@@ -7,8 +7,6 @@ from src.models.password_model import PasswordCreate, PasswordOut, PasswordDetai
 from src.models.user_model import User
 from src.services import password_service
 from src.services.auth_dependency import get_current_user
-from src.pw_sistem import pw_generator
-from src.pw_sistem import passphrase_generator
 
 password_router = APIRouter()
 
@@ -17,12 +15,12 @@ def get_analasys(password: str = Body(..., embed=True)):
     return password_service.get_analyze_password(password)  
 
 @password_router.post("/create", tags=["Passwords"])
-def create_password(
+async def create_password(
     password_data: PasswordCreate ,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    return password_service.create_password(db, password_data, current_user)
+    return await password_service.create_password(db, password_data, current_user)
 
 @password_router.post("/by-user", response_model=List[PasswordOut], tags=["Passwords"])
 def get_passwords(
@@ -41,12 +39,12 @@ def get_password_detail(
     return password_service.get_password_detail(db, current_user, password_request)
 
 @password_router.delete("/delete", tags=["Passwords"])
-def delete_password(
+async def delete_password(
     password_request: PasswordRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return password_service.delete_password(db, current_user, password_request)
+    return await password_service.delete_password(db, current_user, password_request)
 
 @password_router.post("/generate_passwords", tags=["Passwords"])
 def generate_password(

@@ -13,6 +13,7 @@ from src.pw_sistem.passphrase_generator import generate_passphrase
 from src.pw_sistem.ANN.ann_analyzer import analyze_password
 from src.pw_sistem.pw_generator import generate_password
 from src.pw_sistem.passphrase_generator import generate_passphrase
+from src.services.ws_manager import manager
 
 load_dotenv()
 fernet = Fernet(os.getenv("ENCRYPTION_KEY").encode())
@@ -20,7 +21,7 @@ fernet = Fernet(os.getenv("ENCRYPTION_KEY").encode())
 def decrypt_password(encrypted_password: str) -> str:
     return fernet.decrypt(encrypted_password.encode()).decode()
 
-def create_password(db: Session, password_data: PasswordCreate, user: User):
+async def create_password(db: Session, password_data: PasswordCreate, user: User):
     existing = db.query(Password).filter(Password.user_id == user.id,Password.service_name == password_data.service_name).first()
     if existing:
         raise HTTPException(status_code=409, detail="Nombre no disponible")
@@ -42,6 +43,9 @@ def create_password(db: Session, password_data: PasswordCreate, user: User):
     db.add(new_password)
     db.commit()
     db.refresh(new_password)
+
+    await manager.broadcast(f"Nueva sesión creada: {new_password.service_name}")
+
     return {"message": f"Contraseña guardada: {new_password.service_name}"}
 
 def get_analyze_password(password: str):
@@ -93,7 +97,7 @@ def get_password_detail(db: Session, user: User, request: PasswordRequest):
 
     return password_detail
 
-def delete_password(db: Session, user: User, request: PasswordRequest):
+async def delete_password(db: Session, user: User, request: PasswordRequest):
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     password = db.query(Password).filter(Password.user_id == user.id, Password.id == request.password_id).first()
@@ -106,6 +110,9 @@ def delete_password(db: Session, user: User, request: PasswordRequest):
         
     db.delete(password)
     db.commit()
+
+    await manager.broadcast(f"Sesión eliminada: {password.service_name}")
+
     return {"message:": f"Sesión eliminado correctamente"}
 
 def generate_psw(pwd_options: PasswordGenerate):
