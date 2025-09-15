@@ -1,3 +1,4 @@
+import json
 import os
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
@@ -35,7 +36,9 @@ async def create_note(db: Session, note_data: NoteCreate, user: User):
     db.commit()
     db.refresh(new_note)
 
-    await manager.broadcast(f"Nueva nota creada: {new_note.title}")
+    await manager.broadcast(json.dumps({
+        "type": "note",
+    }))
 
     return {"message": f"Nota guardada: {new_note.title}"}
     
@@ -91,6 +94,8 @@ async def delete_note(db: Session, user: User, request: NoteRequest):
     db.delete(note)
     db.commit()
 
-    await manager.broadcast(f"Nota eliminada: {note.title}")
+    await manager.broadcast(json.dumps({
+        "type": "note",
+    }))
 
     return {"message:": f"Nota eliminado correctamente"}

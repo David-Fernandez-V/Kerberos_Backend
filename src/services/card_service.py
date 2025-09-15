@@ -1,3 +1,4 @@
+import json
 import os
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
@@ -8,6 +9,7 @@ from passlib.context import CryptContext
 from src.models.folder_model import FolderRequest
 from src.models.card_model import Card, CardCreate, CardRequest, CardDetail
 from src.models.user_model import User
+from src.services.ws_manager import manager
 
 load_dotenv()
 fernet = Fernet(os.getenv("ENCRYPTION_KEY").encode())
@@ -15,7 +17,7 @@ fernet = Fernet(os.getenv("ENCRYPTION_KEY").encode())
 def decrypt(encrypted_content: str) -> str:
     return fernet.decrypt(encrypted_content.encode()).decode()
 
-def create_card(db: Session, card_data: CardCreate, user: User):
+async def create_card(db: Session, card_data: CardCreate, user: User):
     existing = db.query(Card).filter(Card.user_id == user.id, Card.alias == card_data.alias).first()
     if existing:
         raise HTTPException(status_code=409, detail="Nombre no disponible")
@@ -48,6 +50,11 @@ def create_card(db: Session, card_data: CardCreate, user: User):
     db.add(new_card)
     db.commit()
     db.refresh(new_card)
+
+    await manager.broadcast(json.dumps({
+        "type": "card",
+    }))
+
     return {"message": f"Tarjeta guardada: {new_card.alias}"}
 
 def get_cards_by_user(db: Session, user: User, request: FolderRequest):
@@ -120,7 +127,7 @@ def get_card_detail(db: Session, user: User, request: CardRequest):
 
     return card_detail
 
-def delete_card(db: Session, user: User, request: CardRequest):
+async def delete_card(db: Session, user: User, request: CardRequest):
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     card = db.query(Card).filter(Card.user_id == user.id, Card.id == request.card_id).first()
@@ -133,4 +140,9 @@ def delete_card(db: Session, user: User, request: CardRequest):
         
     db.delete(card)
     db.commit()
+
+    await manager.broadcast(json.dumps({
+        "type": "card",
+    }))
+
     return {"message:": f"Tarjeta eliminada correctamente"}

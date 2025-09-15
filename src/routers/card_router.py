@@ -11,12 +11,12 @@ from src.services.auth_dependency import get_current_user
 card_router = APIRouter()
 
 @card_router.post("/create", tags=["Cards"])
-def create_card(
+async def create_card(
     card_data: CardCreate ,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    return card_service.create_card(db, card_data, current_user)
+    return await card_service.create_card(db, card_data, current_user)
 
 @card_router.post("/by-user", response_model=List[CardOut], tags=["Cards"])
 def get_cards(
@@ -35,9 +35,9 @@ def get_card_detail(
     return card_service.get_card_detail(db, current_user, card_request)
 
 @card_router.delete("/delete", tags=["Cards"])
-def delete_card(
+async def delete_card(
     card_request: CardRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return card_service.delete_card(db, current_user, card_request)
+    return await card_service.delete_card(db, current_user, card_request)

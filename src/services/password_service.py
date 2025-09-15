@@ -1,3 +1,4 @@
+import json
 import os
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
@@ -44,7 +45,9 @@ async def create_password(db: Session, password_data: PasswordCreate, user: User
     db.commit()
     db.refresh(new_password)
 
-    await manager.broadcast(f"Nueva sesión creada: {new_password.service_name}")
+    await manager.broadcast(json.dumps({
+        "type": "password",
+    }))
 
     return {"message": f"Contraseña guardada: {new_password.service_name}"}
 
@@ -111,7 +114,9 @@ async def delete_password(db: Session, user: User, request: PasswordRequest):
     db.delete(password)
     db.commit()
 
-    await manager.broadcast(f"Sesión eliminada: {password.service_name}")
+    await manager.broadcast(json.dumps({
+        "type": "password",
+    }))
 
     return {"message:": f"Sesión eliminado correctamente"}
 
