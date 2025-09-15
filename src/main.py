@@ -10,6 +10,7 @@ from src.routers.password_router import password_router
 from src.routers.note_router import note_router
 from src.routers.folder_router import folder_router
 from src.routers.card_router import card_router
+from src.routers.websockets_router import ws_router
 
 from src.utils.http_error_handler import http_error_handler
 
@@ -45,5 +46,6 @@ app.include_router(prefix="/passwords", router=password_router)
 app.include_router(prefix="/folders", router=folder_router)
 app.include_router(prefix="/notes", router=note_router)
 app.include_router(prefix="/cards", router=card_router)
+app.include_router(prefix="/ws", router=ws_router )
 
 
