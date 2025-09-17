@@ -17,9 +17,9 @@ def get_folders(
     return folder_service.get_folders_by_user(db, current_user)
 
 @folder_router.post("/create", tags=["Folders"])
-def create_folders(
+async def create_folders(
     folder_data: FolderCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    return folder_service.create_folder(db, current_user, folder_data)
+    return await folder_service.create_folder(db, current_user, folder_data)

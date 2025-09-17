@@ -18,3 +18,10 @@ async def ws_dashboard(
         current_user: User = Depends(get_current_user)
     ):
     return await websocket_service.ws_dashboard(websocket)
+
+@ws_router.websocket("/sidebar")
+async def ws_sidebar(
+        websocket: WebSocket,
+        current_user: User = Depends(get_current_user)
+    ):
+    return await websocket_service.ws_sidebar(websocket)

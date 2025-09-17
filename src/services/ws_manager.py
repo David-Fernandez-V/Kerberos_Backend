@@ -18,3 +18,4 @@ class ConnectionManager:
 
 
 manager = ConnectionManager()
+sidebar_manager = ConnectionManager()
