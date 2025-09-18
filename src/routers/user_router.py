@@ -7,7 +7,7 @@ from src.services.auth_dependency import get_current_user
 
 user_router = APIRouter()
 
-#Eliminar
+"""
 @user_router.get("", tags=["Users"])
 def get_users(
         db: Session = Depends(get_db),
@@ -15,13 +15,13 @@ def get_users(
     ):
     return user_service.get_users(db)
 
-#Eliminar
 @user_router.get("/by-email", tags=["Users"])
 def get_user_by_email(
         email: str, db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
     ):
     return user_service.get_user_by_email(db, email)
+"""
 
 #Registrar usuario (Libre)
 @user_router.post("/register", tags=["Users"])

@@ -8,7 +8,7 @@ from src.services.auth_service import create_verification_token
 
 pwd_context = CryptContext(schemes=["bcrypt"])
 
-""""""
+"""
 def get_users(db: Session):
     users = db.query(User).filter(User.deleted == False).all()
     if not users:
@@ -26,7 +26,7 @@ def get_user_by_email(db: Session, email: str):
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return user
-""""""
+"""
 
 def create_user(db: Session, user_data: UserCreate):
     # Verificar si ya existe
@@ -56,6 +56,7 @@ def create_user(db: Session, user_data: UserCreate):
 
     return {"message": f"Usuario registrado con éxito: {new_user.email}. Revisa tu correo para verificar la cuenta."}
 
+#Modificar
 def change_password(db: Session, user_id: int, new_password: str):
     user = db.query(User).filter(User.deleted == False, User.id == user_id).first()
     if not user:
