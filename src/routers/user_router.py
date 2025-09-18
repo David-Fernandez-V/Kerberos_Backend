@@ -21,11 +21,11 @@ def change_password(
     ):
     return user_service.change_password(db, user_id, new_password)
 
-@user_router.put("/me", tags=["Users"])
+@user_router.get("/me", tags=["Users"])
 def get_me(
     current_user: User = Depends(get_current_user)
 ):
-    return current_user
+    return user_service.get_profile(current_user)
 
 @user_router.put("/delete-user/{user_id}", tags=["Users"])
 def delete_user(

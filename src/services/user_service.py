@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from fastapi import HTTPException
 
-from src.models.user_model import User, UserCreate, UserRequest
+from src.models.user_model import User, UserCreate, UserRequest, UserOut
 from src.email_sistem.verify_email import send_verification_email
 from src.services.auth_service import create_verification_token
 
@@ -35,6 +35,13 @@ def create_user(db: Session, user_data: UserCreate):
         raise HTTPException(status_code=500, detail=f"Error enviando correo: {str(e)}")
 
     return {"message": f"Usuario registrado con éxito: {new_user.email}. Revisa tu correo para verificar la cuenta."}
+
+def get_profile(user: User):
+    me = UserOut(
+        email=user.email,
+        name=user.name
+    )
+    return me
 
 #Modificar
 def change_password(db: Session, user_id: int, new_password: str):

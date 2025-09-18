@@ -20,6 +20,10 @@ class User(Base):
     notes = relationship("Note", back_populates="owner")
     cards = relationship("Card", back_populates="owner")
 
+class UserOut(BaseModel):
+    email: str
+    name: str
+
 class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field (...,min_length=5)
