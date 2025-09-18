@@ -12,6 +12,7 @@ class User(Base):
     created_at = Column(DateTime, default=func.now())
     deleted = Column(Boolean, nullable=False, default=False)
     is_verified = Column(Boolean, nullable=False, default=False)
+    name = Column(String(255), nullable=False)
 
     # Relaciones
     folders = relationship("Folder", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
@@ -22,6 +23,7 @@ class User(Base):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field (...,min_length=5)
+    name: str = Field(...,min_length=2)
 
 class UserLogin(BaseModel):
     email: EmailStr

@@ -59,12 +59,12 @@ def check_password(
 ):
     return user_service.check_master_password(current_user, request)
 
-#Eliminar
+"""
 @user_router.get("/{user_id}", tags=["Users"])
 def get_user(
         user_id: int = Path(), db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
     ):
-    return user_service.get_user_by_id(db, user_id)
+    return user_service.get_user_by_id(db, user_id)"""
 
     
