@@ -7,22 +7,6 @@ from src.services.auth_dependency import get_current_user
 
 user_router = APIRouter()
 
-"""
-@user_router.get("", tags=["Users"])
-def get_users(
-        db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
-    ):
-    return user_service.get_users(db)
-
-@user_router.get("/by-email", tags=["Users"])
-def get_user_by_email(
-        email: str, db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
-    ):
-    return user_service.get_user_by_email(db, email)
-"""
-
 #Registrar usuario (Libre)
 @user_router.post("/register", tags=["Users"])
 def create_user(
@@ -58,13 +42,5 @@ def check_password(
     current_user: User = Depends(get_current_user),
 ):
     return user_service.check_master_password(current_user, request)
-
-"""
-@user_router.get("/{user_id}", tags=["Users"])
-def get_user(
-        user_id: int = Path(), db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
-    ):
-    return user_service.get_user_by_id(db, user_id)"""
 
     
