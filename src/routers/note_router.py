@@ -41,3 +41,12 @@ async def delete_note(
     current_user: User = Depends(get_current_user),
 ):
     return await note_service.delete_note(db, current_user, note_request)
+
+@note_router.post("/modify", tags=["Notes"])
+async def modify_note(
+    new_data: NoteCreate,
+    note_request: NoteRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return await note_service.modify_note(db, current_user, note_request, new_data)
