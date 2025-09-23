@@ -131,3 +131,34 @@ def generate_psphrase(pwd_options: PassphraseGenerate):
         return {"passphrase": generate_passphrase(pwd_options)}
     except Exception:
         raise HTTPException(status_code=500, detail="Error al generar contraseña")
+    
+async def modify_password(db: Session, user: User, request: PasswordRequest, new_data: PasswordCreate):
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    password = db.query(Password).filter(Password.user_id == user.id, Password.id == request.password_id).first()
+    if not password:
+        raise HTTPException(status_code=404, detail="Contraseña no encontrada")
+    
+    if password.ask_password:
+        if not pwd_context.verify(request.master_password, user.password_hash):
+            raise HTTPException(status_code=401, detail="Contraseña maestra incorrecta")
+        
+    password_encrypted = fernet.encrypt(new_data.password.encode()).decode()
+    
+    password.service_name = new_data.service_name
+    password.username = new_data.username
+    password.password_encrypted = password_encrypted
+    password.ask_password = new_data.ask_master_password
+    password.web_page = new_data.web_page
+    password.notes = new_data.notes
+    password.folder_id = new_data.folder_id
+
+    db.add(password)
+    db.commit()
+    db.refresh(password)
+
+    await manager.broadcast(json.dumps({
+        "type": "password",
+    }))
+
+    return {"message:": f"Sesión modificada correctamente"}

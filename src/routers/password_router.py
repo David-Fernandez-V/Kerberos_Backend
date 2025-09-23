@@ -59,3 +59,12 @@ def generate_passphrase(
     current_user: User = Depends(get_current_user),
 ):
     return password_service.generate_psphrase(pwd_options)
+
+@password_router.post("/modify", tags=["Passwords"])
+async def modify_password(
+    new_data: PasswordCreate,
+    password_request: PasswordRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return await password_service.modify_password(db, current_user, password_request, new_data)
