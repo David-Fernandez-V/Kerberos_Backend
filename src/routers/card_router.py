@@ -41,3 +41,12 @@ async def delete_card(
     current_user: User = Depends(get_current_user),
 ):
     return await card_service.delete_card(db, current_user, card_request)
+
+@card_router.post("/modify", tags=["Cards"])
+async def modify_card(
+    new_data: CardCreate,
+    card_request: CardRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return await card_service.modify_card(db, current_user, card_request, new_data)

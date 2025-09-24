@@ -146,3 +146,46 @@ async def delete_card(db: Session, user: User, request: CardRequest):
     }))
 
     return {"message:": f"Tarjeta eliminada correctamente"}
+
+async def modify_card(db: Session, user: User, request: CardRequest, new_data: CardCreate):
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    card = db.query(Card).filter(Card.user_id == user.id, Card.id == request.card_id).first()
+    if not card:
+        raise HTTPException(status_code=404, detail="Tarjeta no encontrada")
+    
+    if card.ask_password:
+        if not pwd_context.verify(request.master_password, user.password_hash):
+            raise HTTPException(status_code=401, detail="Contraseña maestra incorrecta")
+        
+    number_encrypted = fernet.encrypt(new_data.number.encode()).decode()
+    cardholder_name_encrypted = fernet.encrypt(new_data.cardholder_name.encode()).decode()
+    expiration_month_encrypted = fernet.encrypt(str(new_data.expiration_month).encode()).decode()
+    expiration_year_encrypted = fernet.encrypt(str(new_data.expiration_year).encode()).decode()
+    
+    if(new_data.csv):
+        csv_encrypetd = fernet.encrypt(new_data.csv.encode()).decode()
+    else:
+        csv_encrypetd = None
+
+    card.alias = new_data.alias
+    card.cardholder_name = cardholder_name_encrypted
+    card.number_encrypted = number_encrypted
+    card.expiration_month = expiration_month_encrypted
+    card.expiration_year = expiration_year_encrypted
+    card.type = new_data.type
+    card.csv_encrypted = csv_encrypetd
+    card.brand = new_data.brand
+    card.notes = new_data.notes
+    card.folder_id = new_data.folder_id
+    card.ask_password = new_data.ask_master_password
+
+    db.add(card)
+    db.commit()
+    db.refresh(card)
+
+    await manager.broadcast(json.dumps({
+        "type": "card",
+    }))
+
+    return {"message:": f"Nota modificada correctamente"}
