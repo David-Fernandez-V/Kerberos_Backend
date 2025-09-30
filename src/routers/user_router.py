@@ -22,12 +22,12 @@ def change_password(
     return user_service.change_password(db, user_id, new_password)
 
 @user_router.post("/change-name", tags=["Users"])
-def change_name(
+async def change_name(
     request: ChangeNameRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return user_service.change_name(db, current_user, request)
+    return await user_service.change_name(db, current_user, request)
 
 @user_router.get("/me", tags=["Users"])
 def get_me(

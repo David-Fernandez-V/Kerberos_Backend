@@ -1,3 +1,4 @@
+import json
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from fastapi import HTTPException
@@ -5,6 +6,7 @@ from fastapi import HTTPException
 from src.models.user_model import ChangeNameRequest, User, UserCreate, UserRequest, UserOut
 from src.email_sistem.verify_email import send_verification_email
 from src.services.auth_service import create_verification_token
+from src.services.ws_manager import sidebar_manager
 
 pwd_context = CryptContext(schemes=["bcrypt"])
 
@@ -56,7 +58,7 @@ def change_password(db: Session, user_id: int, new_password: str):
     db.refresh(user)
     return {"message": f"Contraseña actualizada para el correo: {user.email}"}
 
-def change_name(db: Session, user: User, request: ChangeNameRequest):
+async def change_name(db: Session, user: User, request: ChangeNameRequest):
     user_query = db.query(User).filter(User.deleted == False, User.id == user.id).first()
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
@@ -65,6 +67,10 @@ def change_name(db: Session, user: User, request: ChangeNameRequest):
     db.add(user_query)
     db.commit()
     db.refresh(user)
+
+    await sidebar_manager.broadcast(json.dumps({
+        "type": "username",
+    }))
 
     return {"message:": f"Nombre modificado correctamente"}
 
