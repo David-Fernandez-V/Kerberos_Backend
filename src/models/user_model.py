@@ -35,3 +35,6 @@ class UserLogin(BaseModel):
 
 class UserRequest(BaseModel):
     master_password: str = ""
+
+class ChangeNameRequest(BaseModel):
+    new_name: str
