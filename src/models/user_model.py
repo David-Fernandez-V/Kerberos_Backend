@@ -38,3 +38,6 @@ class UserRequest(BaseModel):
 
 class ChangeNameRequest(BaseModel):
     new_name: str
+
+class ChangeEmailRequest(BaseModel):
+    new_email: str

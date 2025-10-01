@@ -29,6 +29,14 @@ async def change_name(
 ):
     return await user_service.change_name(db, current_user, request)
 
+@user_router.post("/change-email", tags=["Users"])
+def change_name(
+    token: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return user_service.change_email(db, current_user, token)
+
 @user_router.get("/me", tags=["Users"])
 def get_me(
     current_user: User = Depends(get_current_user)
