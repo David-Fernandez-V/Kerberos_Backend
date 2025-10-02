@@ -9,7 +9,7 @@ def send_changemail_email(to_email: str, token: str):
     password = os.getenv("EMAIL_PASS")
     base_url = os.getenv("BASE_URL")
     subject = "Cambio de correo"
-    verification_link = f"{base_url}/verify?token={token}"
+    verification_link = f"{base_url}/emailChange?token={token}"
 
     msg = MIMEMultipart("related")
     msg["From"] = sender
@@ -24,8 +24,9 @@ def send_changemail_email(to_email: str, token: str):
     <html>
       <body>
         <img src="cid:logo" alt="Kerberos Logo" height="150"><br>
-        <h2>Bienvenido a Kerberos</h2>
-        <p>Has solicitado un cambio de correo electrónico. Por favor haz clic en el siguiente enlace para verificar este correo:</p>
+        <h2>Kerberos: Cambio de correo electrónico</h2>
+        <p>Has solicitado un cambio de correo electrónico. Por favor haz clic en el siguiente enlace para verificar este correo.</p>
+        <p>Para poder acceder a este link tendras que tener iniciada tu seisón en la página web de Kerberos.</p>
         <a href="{verification_link}">Verificar cambio de correo</a>
       </body>
     </html>

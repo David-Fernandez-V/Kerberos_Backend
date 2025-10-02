@@ -41,3 +41,4 @@ class ChangeNameRequest(BaseModel):
 
 class ChangeEmailRequest(BaseModel):
     new_email: str
+    master_password: str = ""

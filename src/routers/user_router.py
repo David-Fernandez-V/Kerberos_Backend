@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Path, Depends
 from sqlalchemy.orm import Session
 from src.database.db import get_db
-from src.models.user_model import ChangeNameRequest, User, UserCreate, UserRequest
+from src.models.user_model import ChangeEmailRequest, ChangeNameRequest, User, UserCreate, UserRequest
 from src.services import user_service
 from src.services.auth_dependency import get_current_user
 
@@ -36,6 +36,13 @@ def change_name(
     current_user: User = Depends(get_current_user),
 ):
     return user_service.change_email(db, current_user, token)
+
+@user_router.post("/rquest-email-change", tags=["Users"])
+def request_email_change(
+    request: ChangeEmailRequest,
+    current_user: User = Depends(get_current_user),
+):
+    return user_service.request_email_change(current_user, request)
 
 @user_router.get("/me", tags=["Users"])
 def get_me(

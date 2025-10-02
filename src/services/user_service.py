@@ -115,7 +115,12 @@ def change_email(db: Session, user: User, token: str):
     except ExpiredSignatureError:
         raise HTTPException(status_code=400, detail="El token ha expirado, vuelve a registrarte")
 
-def request_email_change(request: ChangeEmailRequest):
+def request_email_change(user: User, request: ChangeEmailRequest):
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    if not pwd_context.verify(request.master_password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Contraseña maestra incorrecta")
+
      # Generar token de verificación
     token = create_verification_token(request.new_email)
 
