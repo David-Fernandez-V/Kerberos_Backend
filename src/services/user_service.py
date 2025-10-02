@@ -108,9 +108,7 @@ def change_email(db: Session, user: User, token: str):
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error enviando correo: {str(e)}")
 
-        response = JSONResponse(content={"message": "Correo modificado correctamente. Cerrando sesión"})
-        response.delete_cookie("access_token")
-        return response
+        return {"message": "Correo modificado correctamente. Cerrando sesión"}
     
     except ExpiredSignatureError:
         raise HTTPException(status_code=400, detail="El token ha expirado, vuelve a registrarte")

@@ -37,7 +37,7 @@ def change_name(
 ):
     return user_service.change_email(db, current_user, token)
 
-@user_router.post("/rquest-email-change", tags=["Users"])
+@user_router.post("/request-email-change", tags=["Users"])
 def request_email_change(
     request: ChangeEmailRequest,
     current_user: User = Depends(get_current_user),
