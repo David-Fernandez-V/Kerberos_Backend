@@ -77,7 +77,7 @@ async def change_name(db: Session, user: User, request: ChangeNameRequest):
     db.commit()
     db.refresh(user)
 
-    await sidebar_manager.broadcast(json.dumps({
+    await sidebar_manager.send_to_user(user.id, json.dumps({
         "type": "username",
     }))
 

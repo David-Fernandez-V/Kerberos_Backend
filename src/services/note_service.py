@@ -36,7 +36,7 @@ async def create_note(db: Session, note_data: NoteCreate, user: User):
     db.commit()
     db.refresh(new_note)
 
-    await manager.broadcast(json.dumps({
+    await manager.send_to_user(user.id, json.dumps({
         "type": "note",
     }))
 
@@ -94,7 +94,7 @@ async def delete_note(db: Session, user: User, request: NoteRequest):
     db.delete(note)
     db.commit()
 
-    await manager.broadcast(json.dumps({
+    await manager.send_to_user(user.id, json.dumps({
         "type": "note",
     }))
 
@@ -122,7 +122,7 @@ async def modify_note(db: Session, user: User, request: NoteRequest, new_data: N
     db.commit()
     db.refresh(note)
 
-    await manager.broadcast(json.dumps({
+    await manager.send_to_user(user.id, json.dumps({
         "type": "note",
     }))
 

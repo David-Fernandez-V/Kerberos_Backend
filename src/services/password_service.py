@@ -45,7 +45,7 @@ async def create_password(db: Session, password_data: PasswordCreate, user: User
     db.commit()
     db.refresh(new_password)
 
-    await manager.broadcast(json.dumps({
+    await manager.send_to_user(user.id, json.dumps({
         "type": "password",
     }))
 
@@ -114,7 +114,7 @@ async def delete_password(db: Session, user: User, request: PasswordRequest):
     db.delete(password)
     db.commit()
 
-    await manager.broadcast(json.dumps({
+    await manager.send_to_user(user.id, json.dumps({
         "type": "password",
     }))
 
@@ -157,7 +157,7 @@ async def modify_password(db: Session, user: User, request: PasswordRequest, new
     db.commit()
     db.refresh(password)
 
-    await manager.broadcast(json.dumps({
+    await manager.send_to_user(user.id, json.dumps({
         "type": "password",
     }))
 

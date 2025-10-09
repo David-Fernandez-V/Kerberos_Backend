@@ -6,20 +6,20 @@ def test():
     return {"message": "Hola ws"}
 
 
-async def ws_dashboard(websocket: WebSocket):
-    await manager.connect(websocket)
+async def ws_dashboard(websocket: WebSocket, user_id: int):
+    await manager.connect(user_id, websocket)
     try:
         while True:
             data = await websocket.receive_text()
             print(f"Mensaje recibido: {data}")
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        manager.disconnect(user_id, websocket)
 
-async def ws_sidebar(websocket: WebSocket):
-    await sidebar_manager.connect(websocket)
+async def ws_sidebar(websocket: WebSocket, user_id: int):
+    await sidebar_manager.connect(user_id, websocket)
     try:
         while True:
             data = await websocket.receive_text()
             print(f"Mensaje recibido: {data}")
     except WebSocketDisconnect:
-        sidebar_manager.disconnect(websocket)
+        sidebar_manager.disconnect(user_id, websocket)

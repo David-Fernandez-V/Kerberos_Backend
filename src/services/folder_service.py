@@ -24,7 +24,7 @@ async def create_folder(db: Session, user: User, folder_data: FolderCreate):
     db.commit()
     db.refresh(new_folder)
 
-    await sidebar_manager.broadcast(json.dumps({
+    await sidebar_manager.send_to_user(user.id, json.dumps({
         "type": "folder",
     }))
 

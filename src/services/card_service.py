@@ -51,7 +51,7 @@ async def create_card(db: Session, card_data: CardCreate, user: User):
     db.commit()
     db.refresh(new_card)
 
-    await manager.broadcast(json.dumps({
+    await manager.send_to_user(user.id, json.dumps({
         "type": "card",
     }))
 
@@ -141,7 +141,7 @@ async def delete_card(db: Session, user: User, request: CardRequest):
     db.delete(card)
     db.commit()
 
-    await manager.broadcast(json.dumps({
+    await manager.send_to_user(user.id, json.dumps({
         "type": "card",
     }))
 
@@ -184,7 +184,7 @@ async def modify_card(db: Session, user: User, request: CardRequest, new_data: C
     db.commit()
     db.refresh(card)
 
-    await manager.broadcast(json.dumps({
+    await manager.send_to_user(user.id, json.dumps({
         "type": "card",
     }))
 
