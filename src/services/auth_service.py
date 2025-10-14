@@ -91,7 +91,7 @@ def verify_email(db: Session, token: str):
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
         
         if user.is_verified:
-            return {"message": "El correo ya está verificado"}
+            raise HTTPException(status_code=500, detail="El correo ya está verificado")
 
         user.is_verified = True
         db.commit()

@@ -83,7 +83,7 @@ async def change_name(db: Session, user: User, request: ChangeNameRequest):
 
     return {"message:": f"Nombre modificado correctamente"}
 
-def change_email(db: Session, user: User, token: str):
+async def change_email(db: Session, user: User, token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         new_email = payload.get("sub")
@@ -97,7 +97,7 @@ def change_email(db: Session, user: User, token: str):
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
         
         if user.email == new_email:
-            return {"message": "El correo es igual al anterior"}
+            raise HTTPException(status_code=500, detail="El correo ya está verificado")       
     
         user_query.email = new_email
         db.commit()
@@ -107,11 +107,15 @@ def change_email(db: Session, user: User, token: str):
             send_confirmation_change_email(new_email)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error enviando correo: {str(e)}")
+        
+        await sidebar_manager.send_to_user(user.id, json.dumps({
+            "type": "logout",
+        }))
 
-        return {"message": "Correo modificado correctamente. Cerrando sesión"}
+        return {"message": "Correo modificado correctamente."}
     
     except ExpiredSignatureError:
-        raise HTTPException(status_code=400, detail="El token ha expirado, vuelve a registrarte")
+        raise HTTPException(status_code=400, detail="El token ha expirado")
 
 def request_email_change(user: User, request: ChangeEmailRequest):
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
