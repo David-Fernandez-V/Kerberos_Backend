@@ -1,6 +1,5 @@
 import os
 import json
-from fastapi.responses import JSONResponse
 from jose import ExpiredSignatureError
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
@@ -9,7 +8,7 @@ from jose import jwt
 
 from src.email_sistem.confirmation_change_email import send_confirmation_change_email
 from src.email_sistem.changemail_email import send_changemail_email
-from src.models.user_model import ChangeNameRequest, ChangeEmailRequest, User, UserCreate, UserRequest, UserOut
+from src.models.user_model import ChangeNameRequest, ChangeEmailRequest, ChangePasswordRequest, User, UserCreate, UserRequest, UserOut
 from src.email_sistem.verify_email import send_verification_email
 from src.services.auth_service import create_verification_token
 from src.services.ws_manager import sidebar_manager
@@ -55,17 +54,29 @@ def get_profile(user: User):
     )
     return me
 
-#Modificar
-def change_password(db: Session, user_id: int, new_password: str):
-    user = db.query(User).filter(User.deleted == False, User.id == user_id).first()
+async def change_password(db: Session, user: User, request: ChangePasswordRequest):
+    user = db.query(User).filter(User.deleted == False, User.id == user.id).first()
+
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    if not pwd_context.verify(request.master_password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Contraseña maestra incorrecta")
+
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    hashed_password = pwd_context.hash(new_password)
+    
+    hashed_password = pwd_context.hash(request.new_password)
     user.password_hash = hashed_password
+
     db.add(user)
     db.commit()
     db.refresh(user)
-    return {"message": f"Contraseña actualizada para el correo: {user.email}"}
+
+    await sidebar_manager.send_to_user(user.id, json.dumps({
+        "type": "logout",
+    }))
+
+    return {"message": f"Contraseña actualizada correctamente"}
 
 async def change_name(db: Session, user: User, request: ChangeNameRequest):
     user_query = db.query(User).filter(User.deleted == False, User.id == user.id).first()
@@ -133,24 +144,6 @@ def request_email_change(user: User, request: ChangeEmailRequest):
         raise HTTPException(status_code=500, detail=f"Error enviando correo: {str(e)}")
 
     return {"message": f"Solicitando cambio de correo a {request.new_email}. Revisa tu correo para verificar la cuenta."}
-
-def delete_user(db: Session, user_id: int):
-    user = db.query(User).filter(User.deleted == False, User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    user.deleted = True
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return {"message:": f"Usuario eliminado correctamente: {user.email}"}
-
-def destroy_user(db: Session, user_id: int):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    db.delete(user)
-    db.commit()
-    return {"message:": f"Usuario eliminado correctamente: {user.email}"}
 
 def check_master_password(user: User, request: UserRequest):
     if not pwd_context.verify(request.master_password, user.password_hash):

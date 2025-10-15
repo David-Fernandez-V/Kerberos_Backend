@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Path, Depends
 from sqlalchemy.orm import Session
 from src.database.db import get_db
-from src.models.user_model import ChangeEmailRequest, ChangeNameRequest, User, UserCreate, UserRequest
+from src.models.user_model import ChangeEmailRequest, ChangeNameRequest, ChangePasswordRequest, User, UserCreate, UserRequest
 from src.services import user_service
 from src.services.auth_dependency import get_current_user
 
@@ -14,12 +14,13 @@ def create_user(
     ):
     return user_service.create_user(db, user_data)
 
-@user_router.put("/change-password/{user_id}", tags=["Users"])
-def change_password(
-        user_id: int, new_password: str, db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)    
-    ):
-    return user_service.change_password(db, user_id, new_password)
+@user_router.post("/change-password", tags=["Users"])
+async def change_password(
+    request: ChangePasswordRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return await user_service.change_password(db, current_user, request)
 
 @user_router.post("/change-name", tags=["Users"])
 async def change_name(
@@ -49,20 +50,6 @@ def get_me(
     current_user: User = Depends(get_current_user)
 ):
     return user_service.get_profile(current_user)
-
-@user_router.put("/delete-user/{user_id}", tags=["Users"])
-def delete_user(
-        user_id: int, db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
-    ):
-    return user_service.delete_user(db, user_id)
-
-@user_router.delete("/destroy-user/{user_id}", tags=["Users"])
-def destroy_user(
-        user_id: int, db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
-    ):
-    return user_service.destroy_user(db, user_id)
 
 @user_router.post("/check-masterpassword",tags=["Users"])
 def check_password(
