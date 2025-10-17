@@ -5,7 +5,7 @@ from src.database.db import get_db
 from src.models.user_model import User
 from src.services import folder_service
 from src.services.auth_dependency import get_current_user
-from src.models.folder_model import Folder, FolderOut, FolderCreate
+from src.models.folder_model import FolderOut, FolderCreate, FolderRequest
 
 folder_router = APIRouter()
 
@@ -23,3 +23,11 @@ async def create_folders(
     current_user: User = Depends(get_current_user)
 ):
     return await folder_service.create_folder(db, current_user, folder_data)
+
+@folder_router.delete("/delete", tags=["Folders"])
+async def delete_folder(
+    folder_request: FolderRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return await folder_service.delete_folder(db, current_user, folder_request)

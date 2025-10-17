@@ -2,7 +2,7 @@ import json
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
-from src.models.folder_model import Folder, FolderCreate
+from src.models.folder_model import Folder, FolderCreate, FolderRequest
 from src.models.user_model import User
 from src.services.ws_manager import sidebar_manager
 
@@ -29,3 +29,18 @@ async def create_folder(db: Session, user: User, folder_data: FolderCreate):
     }))
 
     return {"message": f"Contraseña guardada: {new_folder.name}"}
+
+async def delete_folder(db: Session, user: User, request: FolderRequest):
+    folder = db.query(Folder).filter(Folder.user_id == user.id, Folder.id == request.folder_id).first()
+    if not folder:
+        raise HTTPException(status_code=404, detail="Carpeta no encontrada")
+    
+    db.delete(folder)
+    db.commit()
+
+    await sidebar_manager.send_to_user(user.id, json.dumps({
+        "type": "folder",
+    }))
+
+    return {"message:": f"Carpeta eliminada correctamente"}
+
