@@ -4,7 +4,7 @@ from fastapi import HTTPException
 
 from src.models.folder_model import Folder, FolderCreate, FolderRequest
 from src.models.user_model import User
-from src.services.ws_manager import sidebar_manager
+from src.services.ws_manager import manager, sidebar_manager
 
 def get_folders_by_user(db: Session, user: User):
     folders = db.query(Folder).filter(Folder.user_id == user.id).all()
@@ -40,6 +40,18 @@ async def delete_folder(db: Session, user: User, request: FolderRequest):
 
     await sidebar_manager.send_to_user(user.id, json.dumps({
         "type": "folder",
+    }))
+
+    await manager.send_to_user(user.id, json.dumps({
+        "type": "note",
+    }))
+
+    await manager.send_to_user(user.id, json.dumps({
+        "type": "password",
+    }))
+
+    await manager.send_to_user(user.id, json.dumps({
+        "type": "card",
     }))
 
     return {"message:": f"Carpeta eliminada correctamente"}
