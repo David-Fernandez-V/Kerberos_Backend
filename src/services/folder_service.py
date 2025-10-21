@@ -30,6 +30,35 @@ async def create_folder(db: Session, user: User, folder_data: FolderCreate):
 
     return {"message": f"Contraseña guardada: {new_folder.name}"}
 
+async def modify_folder(db: Session, user: User, request: FolderRequest, new_data: FolderCreate):
+    folder = db.query(Folder).filter(Folder.user_id == user.id, Folder.id == request.folder_id).first()
+    if not folder:
+        raise HTTPException(status=404, detail="Carpeta no encontrada")
+    
+    folder.name = new_data.name
+
+    db.add(folder)
+    db.commit()
+    db.refresh(folder)
+
+    await sidebar_manager.send_to_user(user.id, json.dumps({
+        "type": "folder",
+    }))
+
+    await manager.send_to_user(user.id, json.dumps({
+        "type": "note",
+    }))
+
+    await manager.send_to_user(user.id, json.dumps({
+        "type": "password",
+    }))
+
+    await manager.send_to_user(user.id, json.dumps({
+        "type": "card",
+    }))
+
+    return {"message:": f"Carpeta modificada correctamente"}
+
 async def delete_folder(db: Session, user: User, request: FolderRequest):
     folder = db.query(Folder).filter(Folder.user_id == user.id, Folder.id == request.folder_id).first()
     if not folder:
