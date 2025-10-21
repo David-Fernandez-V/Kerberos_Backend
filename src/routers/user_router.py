@@ -41,9 +41,10 @@ async def change_name(
 @user_router.post("/request-email-change", tags=["Users"])
 def request_email_change(
     request: ChangeEmailRequest,
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return user_service.request_email_change(current_user, request)
+    return user_service.request_email_change(db, current_user, request)
 
 @user_router.get("/me", tags=["Users"])
 def get_me(

@@ -154,6 +154,10 @@ async def modify_card(db: Session, user: User, request: CardRequest, new_data: C
     if not card:
         raise HTTPException(status_code=404, detail="Tarjeta no encontrada")
     
+    existing = db.query(Card).filter(Card.user_id == user.id, Card.alias == new_data.alias).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Nombre no disponible")
+    
     if card.ask_password:
         if not pwd_context.verify(request.master_password, user.password_hash):
             raise HTTPException(status_code=401, detail="Contraseña maestra incorrecta")

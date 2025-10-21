@@ -139,6 +139,10 @@ async def modify_password(db: Session, user: User, request: PasswordRequest, new
     if not password:
         raise HTTPException(status_code=404, detail="Contraseña no encontrada")
     
+    existing = db.query(Password).filter(Password.user_id == user.id,Password.service_name == new_data.service_name).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Nombre no disponible")
+    
     if password.ask_password:
         if not pwd_context.verify(request.master_password, user.password_hash):
             raise HTTPException(status_code=401, detail="Contraseña maestra incorrecta")

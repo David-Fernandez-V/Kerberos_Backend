@@ -107,6 +107,10 @@ async def modify_note(db: Session, user: User, request: NoteRequest, new_data: N
     if not note:
         raise HTTPException(status_code=404, detail="Nota no encontrada")
     
+    existing = db.query(Note).filter(Note.user_id == user.id,Note.title == new_data.title).first()
+    if existing:
+       raise HTTPException(status_code=409, detail="Titulo no disponible")
+    
     if note.ask_password:
         if not pwd_context.verify(request.master_password, user.password_hash):
             raise HTTPException(status_code=401, detail="Contraseña maestra incorrecta")
