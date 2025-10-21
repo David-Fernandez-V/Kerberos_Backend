@@ -98,7 +98,7 @@ async def delete_note(db: Session, user: User, request: NoteRequest):
         "type": "note",
     }))
 
-    return {"message:": f"Nota eliminada correctamente"}
+    return {"message": f"Nota eliminada correctamente"}
 
 async def modify_note(db: Session, user: User, request: NoteRequest, new_data: NoteCreate):
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -126,5 +126,5 @@ async def modify_note(db: Session, user: User, request: NoteRequest, new_data: N
         "type": "note",
     }))
 
-    return {"message:": f"Nota modificada correctamente"}
+    return {"message": f"Nota modificada correctamente"}
     

@@ -118,7 +118,7 @@ async def delete_password(db: Session, user: User, request: PasswordRequest):
         "type": "password",
     }))
 
-    return {"message:": f"Sesión eliminado correctamente"}
+    return {"message": f"Sesión eliminado correctamente"}
 
 def generate_psw(pwd_options: PasswordGenerate):
     try:
@@ -161,4 +161,4 @@ async def modify_password(db: Session, user: User, request: PasswordRequest, new
         "type": "password",
     }))
 
-    return {"message:": f"Sesión modificada correctamente"}
+    return {"message": f"Sesión modificada correctamente"}

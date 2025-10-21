@@ -92,7 +92,7 @@ async def change_name(db: Session, user: User, request: ChangeNameRequest):
         "type": "username",
     }))
 
-    return {"message:": f"Nombre modificado correctamente"}
+    return {"message": f"Nombre modificado correctamente"}
 
 async def change_email(db: Session, user: User, token: str):
     try:

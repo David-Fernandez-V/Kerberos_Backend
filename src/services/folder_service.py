@@ -57,7 +57,7 @@ async def modify_folder(db: Session, user: User, request: FolderRequest, new_dat
         "type": "card",
     }))
 
-    return {"message:": f"Carpeta modificada correctamente"}
+    return {"message": f"Carpeta modificada correctamente"}
 
 async def delete_folder(db: Session, user: User, request: FolderRequest):
     folder = db.query(Folder).filter(Folder.user_id == user.id, Folder.id == request.folder_id).first()
@@ -83,5 +83,5 @@ async def delete_folder(db: Session, user: User, request: FolderRequest):
         "type": "card",
     }))
 
-    return {"message:": f"Carpeta eliminada correctamente"}
+    return {"message": f"Carpeta eliminada correctamente"}
 

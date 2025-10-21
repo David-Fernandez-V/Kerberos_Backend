@@ -145,7 +145,7 @@ async def delete_card(db: Session, user: User, request: CardRequest):
         "type": "card",
     }))
 
-    return {"message:": f"Tarjeta eliminada correctamente"}
+    return {"message": f"Tarjeta eliminada correctamente"}
 
 async def modify_card(db: Session, user: User, request: CardRequest, new_data: CardCreate):
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -188,4 +188,4 @@ async def modify_card(db: Session, user: User, request: CardRequest, new_data: C
         "type": "card",
     }))
 
-    return {"message:": f"Nota modificada correctamente"}
+    return {"message": f"Nota modificada correctamente"}
