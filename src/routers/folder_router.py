@@ -26,12 +26,12 @@ async def create_folder(
 
 @folder_router.post("/modify", tags=["Folders"])
 async def modify_folder(
-    request: FolderRequest,
     new_data: FolderCreate,
+    folder_request: FolderRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    return await folder_service.modify_folder(db, current_user, request, new_data)
+    return await folder_service.modify_folder(db, current_user, folder_request, new_data)
 
 @folder_router.delete("/delete", tags=["Folders"])
 async def delete_folder(
