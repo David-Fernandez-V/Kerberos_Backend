@@ -5,3 +5,4 @@ __pycache__
 Notas/
 venv/
 /src/executions.py
+key-kerberos-api.pem
