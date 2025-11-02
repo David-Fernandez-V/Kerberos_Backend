@@ -38,8 +38,8 @@ def authenticate_user(db: Session, email: str, password: str):
         key="access_token",
         value=token,
         httponly=True,
-        secure=False,  # importante en producción con HTTPS
-        samesite="Lax",  # o "Strict", dependiendo de tu frontend/backend
+        secure=True,  
+        samesite="none",
         max_age=1800,
         expires=1800,
         path="/"
@@ -53,8 +53,8 @@ def refresh_token(current_user: User):
         key="access_token",
         value=new_token,
         httponly=True,
-        secure=False,
-        samesite="Lax",
+        secure=True,
+        samesite="none",
         max_age=900,
         expires=900,
         path="/"
