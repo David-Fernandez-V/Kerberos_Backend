@@ -16,7 +16,13 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
 @authentication_router.post("/logout", tags=["Authentication"])
 def logout():
     response = JSONResponse(content={"message": "Sesión cerrada"})
-    response.delete_cookie("access_token")
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,
+        secure=True,
+        samesite="none",
+        path="/"
+    )
     return response
 
 @authentication_router.get("/me", tags=["Authentication"])
