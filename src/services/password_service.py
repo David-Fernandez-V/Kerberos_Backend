@@ -11,7 +11,7 @@ from src.models.password_model import Password, PasswordCreate, PasswordRequest,
 from src.models.user_model import User
 from src.pw_sistem.pw_generator import generate_password
 from src.pw_sistem.passphrase_generator import generate_passphrase
-from src.pw_sistem.ANN.ann_analyzer import analyze_password
+"""from src.pw_sistem.ANN.ann_analyzer import analyze_password"""
 from src.pw_sistem.pw_generator import generate_password
 from src.pw_sistem.passphrase_generator import generate_passphrase
 from src.services.ws_manager import manager
@@ -27,7 +27,8 @@ async def create_password(db: Session, password_data: PasswordCreate, user: User
     if existing:
         raise HTTPException(status_code=409, detail="Nombre no disponible")
     
-    strength = int(analyze_password(password_data.password))
+    """strength = int(analyze_password(password_data.password))"""
+    strength = 4
     encrypted_password = fernet.encrypt(password_data.password.encode()).decode()
 
     new_password = Password(
@@ -39,6 +40,7 @@ async def create_password(db: Session, password_data: PasswordCreate, user: User
         notes = password_data.notes,
         ask_password = password_data.ask_master_password,
         strength_level = strength,
+        #strength_level = password_data.strength
         folder_id = password_data.folder_id
     )
     db.add(new_password)
@@ -51,11 +53,11 @@ async def create_password(db: Session, password_data: PasswordCreate, user: User
 
     return {"message": f"Contraseña guardada: {new_password.service_name}"}
 
-def get_analyze_password(password: str):
+"""def get_analyze_password(password: str):
     try:
         return {"strength_level": int(analyze_password(password))}
     except Exception:
-        raise HTTPException(status_code=500, detail="Error al analizar la contraseña")
+        raise HTTPException(status_code=500, detail="Error al analizar la contraseña")"""
     
 def get_passwords_by_user(db: Session, user: User, request: FolderRequest):
     query = db.query(Password).filter(Password.user_id == user.id)

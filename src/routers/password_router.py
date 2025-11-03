@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, Body
+from fastapi import APIRouter, Depends #, Body
 from sqlalchemy.orm import Session
 from src.models.folder_model import FolderRequest
 from src.database.db import get_db
@@ -10,9 +10,9 @@ from src.services.auth_dependency import get_current_user
 
 password_router = APIRouter()
 
-@password_router.post("/analyze", tags=["Passwords"])
+"""@password_router.post("/analyze", tags=["Passwords"])
 def get_analasys(password: str = Body(..., embed=True)):
-    return password_service.get_analyze_password(password)  
+    return password_service.get_analyze_password(password)"""  
 
 @password_router.post("/create", tags=["Passwords"])
 async def create_password(
