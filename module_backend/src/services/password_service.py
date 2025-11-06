@@ -1,5 +1,6 @@
 import json
 import os
+import httpx
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from cryptography.fernet import Fernet, InvalidToken
@@ -11,10 +12,12 @@ from src.models.password_model import Password, PasswordCreate, PasswordRequest,
 from src.models.user_model import User
 from src.pw_sistem.pw_generator import generate_password
 from src.pw_sistem.passphrase_generator import generate_passphrase
-"""from src.pw_sistem.ANN.ann_analyzer import analyze_password"""
 from src.pw_sistem.pw_generator import generate_password
 from src.pw_sistem.passphrase_generator import generate_passphrase
 from src.services.ws_manager import manager
+
+BASE_IA_URL = os.getenv("BASE_IA_URL")
+IA_URL = f"{BASE_IA_URL}/analyze"
 
 load_dotenv()
 fernet = Fernet(os.getenv("ENCRYPTION_KEY").encode())
@@ -53,11 +56,18 @@ async def create_password(db: Session, password_data: PasswordCreate, user: User
 
     return {"message": f"Contraseña guardada: {new_password.service_name}"}
 
-"""def get_analyze_password(password: str):
+def get_analyze_password(password: str):
     try:
-        return {"strength_level": int(analyze_password(password))}
-    except Exception:
-        raise HTTPException(status_code=500, detail="Error al analizar la contraseña")"""
+        response = httpx.post(IA_URL, json={"password": password}, timeout=10.0)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Error en módulo IA: {response.text}"
+            )
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"Error al conectar con módulo IA: {str(e)}")
     
 def get_passwords_by_user(db: Session, user: User, request: FolderRequest):
     query = db.query(Password).filter(Password.user_id == user.id)
