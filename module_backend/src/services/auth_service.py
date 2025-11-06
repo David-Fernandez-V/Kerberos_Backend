@@ -38,7 +38,7 @@ def authenticate_user(db: Session, email: str, password: str):
         key="access_token",
         value=token,
         httponly=True,
-        secure=True,  
+        secure=True,  #Cambiar a false para pruebas en Locust
         samesite="none",
         max_age=1800,
         expires=1800,

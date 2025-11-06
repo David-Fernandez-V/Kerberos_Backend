@@ -6,3 +6,5 @@ Notas/
 *venv/
 *executions.py
 key-kerberos-api.pem
+*locustfile.py
+*locust_ws.py
