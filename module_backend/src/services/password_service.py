@@ -17,7 +17,7 @@ from src.pw_sistem.passphrase_generator import generate_passphrase
 from src.services.ws_manager import manager
 
 BASE_IA_URL = os.getenv("BASE_IA_URL")
-IA_URL = f"{BASE_IA_URL}/analyze"
+IA_URL = f"{BASE_IA_URL}/passwords/analyze"
 
 load_dotenv()
 fernet = Fernet(os.getenv("ENCRYPTION_KEY").encode())
