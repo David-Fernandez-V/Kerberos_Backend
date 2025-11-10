@@ -1,3 +1,4 @@
+import os
 import pickle
 import numpy as np
 from tensorflow.keras.models import load_model
@@ -5,6 +6,9 @@ from tensorflow.keras.models import load_model
 from src.pw_sistem.extract_features import extract_features
 
 labels= ["Muy debil", "Debil", "Estandar", "Fuerte", "Muy fuerte"]
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+rockyou_path = os.path.join(base_dir, "rockyou.txt")
 
 def load_trained_model():
     model = load_model("src/pw_sistem/ANN/classifier_model.h5")
@@ -14,7 +18,7 @@ def load_trained_model():
 
     return model, scaler
 
-with open("src/pw_sistem/ANN/rockyou.txt", encoding="latin-1", errors="ignore") as f:
+with open(rockyou_path, encoding="latin-1", errors="ignore") as f:
     common_words = set(line.strip().lower() for line in f if line.strip())
 
 model, scaler = load_trained_model()
