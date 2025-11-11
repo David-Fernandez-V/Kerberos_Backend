@@ -52,7 +52,7 @@ async def create_card(db: Session, card_data: CardCreate, user: User):
     db.refresh(new_card)
 
     await manager.send_to_user(user.id, json.dumps({
-        "type": "card",
+        "type": "create_card",
     }))
 
     return {"message": f"Tarjeta guardada: {new_card.alias}"}
@@ -142,7 +142,7 @@ async def delete_card(db: Session, user: User, request: CardRequest):
     db.commit()
 
     await manager.send_to_user(user.id, json.dumps({
-        "type": "card",
+        "type": "delete_card",
     }))
 
     return {"message": f"Tarjeta eliminada correctamente"}
@@ -189,7 +189,7 @@ async def modify_card(db: Session, user: User, request: CardRequest, new_data: C
     db.refresh(card)
 
     await manager.send_to_user(user.id, json.dumps({
-        "type": "card",
+        "type": "modify_card",
     }))
 
     return {"message": f"Nota modificada correctamente"}

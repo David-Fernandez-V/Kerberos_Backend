@@ -37,7 +37,7 @@ async def create_note(db: Session, note_data: NoteCreate, user: User):
     db.refresh(new_note)
 
     await manager.send_to_user(user.id, json.dumps({
-        "type": "note",
+        "type": "create_note",
     }))
 
     return {"message": f"Nota guardada: {new_note.title}"}
@@ -95,7 +95,7 @@ async def delete_note(db: Session, user: User, request: NoteRequest):
     db.commit()
 
     await manager.send_to_user(user.id, json.dumps({
-        "type": "note",
+        "type": "delete_note",
     }))
 
     return {"message": f"Nota eliminada correctamente"}
@@ -127,7 +127,7 @@ async def modify_note(db: Session, user: User, request: NoteRequest, new_data: N
     db.refresh(note)
 
     await manager.send_to_user(user.id, json.dumps({
-        "type": "note",
+        "type": "modify_note",
     }))
 
     return {"message": f"Nota modificada correctamente"}
