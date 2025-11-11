@@ -28,6 +28,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 def authenticate_user(db: Session, email: str, password: str):
+    email = email.lower()
     auth_user = db.query(User).filter(User.email == email, User.deleted == False, User.is_verified == True).first()
     if not auth_user or not pwd_context.verify(password, auth_user.password_hash):
         raise HTTPException(status_code=401, detail="Credenciales incorrectas.")
