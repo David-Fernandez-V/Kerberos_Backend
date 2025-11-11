@@ -49,7 +49,7 @@ async def create_password(db: Session, password_data: PasswordCreate, user: User
     db.refresh(new_password)
 
     await manager.send_to_user(user.id, json.dumps({
-        "type": "password",
+        "type": "create_password",
     }))
 
     return {"message": f"Contraseña guardada: {new_password.service_name}"}
@@ -125,7 +125,7 @@ async def delete_password(db: Session, user: User, request: PasswordRequest):
     db.commit()
 
     await manager.send_to_user(user.id, json.dumps({
-        "type": "password",
+        "type": "delete_password",
     }))
 
     return {"message": f"Sesión eliminado correctamente"}
@@ -173,7 +173,7 @@ async def modify_password(db: Session, user: User, request: PasswordRequest, new
     db.refresh(password)
 
     await manager.send_to_user(user.id, json.dumps({
-        "type": "password",
+        "type": "modify_password",
     }))
 
     return {"message": f"Sesión modificada correctamente"}
