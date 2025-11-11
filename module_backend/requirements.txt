@@ -11,7 +11,7 @@ psycopg2-binary==2.9.10
 passlib[bcrypt]==1.7.4
 bcrypt==3.2.2
 python-jose==3.4.0
-cryptography==45.0.2
+cryptography==45.0.6
 ecdsa==0.19.1
 rsa==4.9.1
 
