@@ -48,7 +48,7 @@ class PasswordCreate(BaseModel):
     service_name: str
     username: str
     password: str
-    #strength: int
+    strength: int
     ask_master_password: Optional[bool] = False
     web_page: Optional[str] = None
     notes: Optional[str] = None

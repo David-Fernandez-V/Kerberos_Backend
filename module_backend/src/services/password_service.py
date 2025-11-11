@@ -31,7 +31,6 @@ async def create_password(db: Session, password_data: PasswordCreate, user: User
         raise HTTPException(status_code=409, detail="Nombre no disponible")
     
     """strength = int(analyze_password(password_data.password))"""
-    strength = 4
     encrypted_password = fernet.encrypt(password_data.password.encode()).decode()
 
     new_password = Password(
@@ -42,8 +41,7 @@ async def create_password(db: Session, password_data: PasswordCreate, user: User
         web_page = str(password_data.web_page),
         notes = password_data.notes,
         ask_password = password_data.ask_master_password,
-        strength_level = strength,
-        #strength_level = password_data.strength
+        strength_level = password_data.strength,
         folder_id = password_data.folder_id
     )
     db.add(new_password)
@@ -168,6 +166,7 @@ async def modify_password(db: Session, user: User, request: PasswordRequest, new
     password.web_page = new_data.web_page
     password.notes = new_data.notes
     password.folder_id = new_data.folder_id
+    password.strength_level = new_data.strength,
 
     db.add(password)
     db.commit()
