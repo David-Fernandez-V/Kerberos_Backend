@@ -35,7 +35,7 @@ async def modify_folder(db: Session, user: User, request: FolderRequest, new_dat
     if not folder:
         raise HTTPException(status=404, detail="Carpeta no encontrada")
     
-    existing = db.query(Folder).filter(Folder.user_id == user.id, Folder.name == new_data.name).first()
+    existing = db.query(Folder).filter(Folder.user_id == user.id, Folder.name == new_data.name, Folder.id != request.folder_id).first()
     if existing:
         raise HTTPException(status_code=409, detail="Nombre no disponible")
     

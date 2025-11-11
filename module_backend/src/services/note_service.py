@@ -107,7 +107,7 @@ async def modify_note(db: Session, user: User, request: NoteRequest, new_data: N
     if not note:
         raise HTTPException(status_code=404, detail="Nota no encontrada")
     
-    existing = db.query(Note).filter(Note.user_id == user.id,Note.title == new_data.title).first()
+    existing = db.query(Note).filter(Note.user_id == user.id,Note.title == new_data.title, Note.id != request.note_id).first()
     if existing:
        raise HTTPException(status_code=409, detail="Titulo no disponible")
     

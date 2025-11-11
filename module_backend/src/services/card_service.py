@@ -154,7 +154,7 @@ async def modify_card(db: Session, user: User, request: CardRequest, new_data: C
     if not card:
         raise HTTPException(status_code=404, detail="Tarjeta no encontrada")
     
-    existing = db.query(Card).filter(Card.user_id == user.id, Card.alias == new_data.alias).first()
+    existing = db.query(Card).filter(Card.user_id == user.id, Card.alias == new_data.alias, Card.id != request.card_id).first()
     if existing:
         raise HTTPException(status_code=409, detail="Nombre no disponible")
     
