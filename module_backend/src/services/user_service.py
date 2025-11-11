@@ -26,24 +26,30 @@ def create_user(db: Session, user_data: UserCreate):
 
     # Hashear contraseña
     hashed_password = pwd_context.hash(user_data.password)
+
+    #crear usuario
     new_user = User(
         email=user_data.email,
         password_hash=hashed_password,
         name=user_data.name,
         is_verified=False,
     )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
 
-    # Generar token de verificación
+     # Generar token de verificación
     token = create_verification_token(new_user.email)
 
     # Enviar correo de verificación
     try:
         send_verification_email(new_user.email, token)
     except Exception as e:
+        import traceback
+        print("Error al enviar correo:", traceback.format_exc())  # <— visible en logs
         raise HTTPException(status_code=500, detail=f"Error enviando correo: {str(e)}")
+
+    #registrar en base de datos
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
 
     return {"message": f"Usuario registrado con éxito: {new_user.email}. Revisa tu correo para verificar la cuenta."}
 
