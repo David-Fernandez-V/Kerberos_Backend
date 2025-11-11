@@ -9,7 +9,8 @@ from jose.exceptions import ExpiredSignatureError
 import os
 from dotenv import load_dotenv
 
-from src.email_sistem.confirmation_email import send_confirmation_email
+#from src.email_sistem.confirmation_email import send_confirmation_email
+from src.sendgrid_sistem.send_confirmation import send_confirmation_email
 
 load_dotenv()
 

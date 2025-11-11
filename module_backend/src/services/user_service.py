@@ -6,10 +6,13 @@ from passlib.context import CryptContext
 from fastapi import HTTPException
 from jose import jwt
 
-from src.email_sistem.confirmation_change_email import send_confirmation_change_email
-from src.email_sistem.changemail_email import send_changemail_email
+#from src.email_sistem.confirmation_change_email import send_confirmation_change_email
+from src.sendgrid_sistem.confirmation_change_email import send_confirmation_change_email
+#from src.email_sistem.changemail_email import send_changemail_email
+from src.sendgrid_sistem.send_req_change_email import send_changemail_email
 from src.models.user_model import ChangeNameRequest, ChangeEmailRequest, ChangePasswordRequest, User, UserCreate, UserRequest, UserOut
-from src.email_sistem.verify_email import send_verification_email
+#from src.email_sistem.verify_email import send_verification_email
+from src.sendgrid_sistem.send_verify_email import send_verification_email
 from src.services.auth_service import create_verification_token
 from src.services.ws_manager import sidebar_manager
 
@@ -35,7 +38,12 @@ def create_user(db: Session, user_data: UserCreate):
         is_verified=False,
     )
 
-     # Generar token de verificación
+    #registrar en base de datos
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    # Generar token de verificación
     token = create_verification_token(new_user.email)
 
     # Enviar correo de verificación
@@ -45,11 +53,6 @@ def create_user(db: Session, user_data: UserCreate):
         import traceback
         print("Error al enviar correo:", traceback.format_exc())  # <— visible en logs
         raise HTTPException(status_code=500, detail=f"Error enviando correo: {str(e)}")
-
-    #registrar en base de datos
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
 
     return {"message": f"Usuario registrado con éxito: {new_user.email}. Revisa tu correo para verificar la cuenta."}
 
